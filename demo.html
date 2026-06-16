@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeadPilot AI — Live Demo</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0c;
+  --surface: #111113;
+  --border: hsla(0,0%,100%,.08);
+  --text: #f0f0f2;
+  --muted: hsla(0,0%,100%,.4);
+  --green: #25D366;
+  --wa-bg: #0a1014;
+  --wa-surface: #111b21;
+  --wa-incoming: #202c33;
+  --wa-outgoing: #005c4b;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+html, body { height: 100%; background: var(--bg); color: var(--text); overflow: hidden; }
+
+/* ── Layout ─────────────────────────────────────────────── */
+.shell { display: flex; flex-direction: column; height: 100vh; }
+
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .75em 2em;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.topbar-logo { display: flex; align-items: center; gap: .6em; }
+.logo-mark {
+  width: 1.8em; height: 1.8em; background: var(--text);
+  border-radius: .4em; display: flex; align-items: center; justify-content: center;
+}
+.logo-mark svg { width: 1em; height: 1em; fill: #111113; }
+.logo-name { font-size: .9em; font-weight: 500; }
+.logo-name span { color: var(--muted); font-weight: 400; }
+
+.live-badge {
+  display: flex; align-items: center; gap: .4em;
+  font-size: .65em; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+}
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; animation: blink 1.6s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+.trigger-btn {
+  padding: .55em 1.4em; background: var(--text); color: #111113;
+  border: none; border-radius: 2em; font-size: .82em; font-weight: 600;
+  cursor: pointer; transition: opacity .18s, transform .15s; display: flex; align-items: center; gap: .5em;
+}
+.trigger-btn:hover { opacity: .88; transform: scale(1.03); }
+.trigger-btn:disabled { opacity: .35; cursor: default; transform: none; }
+.trigger-btn svg { width: .9em; height: .9em; fill: #111113; }
+
+/* ── Panels ─────────────────────────────────────────────── */
+.panels { display: flex; flex: 1; overflow: hidden; }
+.divider { width: 1px; background: var(--border); flex-shrink: 0; }
+
+/* ── WhatsApp Panel ─────────────────────────────────────── */
+.wa-panel { width: 420px; flex-shrink: 0; display: flex; flex-direction: column; background: var(--wa-bg); }
+
+.wa-header {
+  background: #1f2c34;
+  padding: .85em 1.2em;
+  display: flex; align-items: center; gap: .85em;
+  border-bottom: 1px solid hsla(0,0%,100%,.06);
+  flex-shrink: 0;
+}
+.wa-avatar {
+  width: 2.4em; height: 2.4em; border-radius: 50%;
+  background: #2a3942; display: flex; align-items: center; justify-content: center;
+  font-size: .85em; font-weight: 600; color: var(--text); flex-shrink: 0;
+}
+.wa-contact-name { font-size: .88em; font-weight: 500; color: var(--text); }
+.wa-contact-status { font-size: .72em; color: hsla(0,0%,100%,.35); margin-top: .1em; }
+.wa-online { color: #25D366; }
+
+.wa-messages {
+  flex: 1; overflow-y: auto; padding: 1em;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='%230a1014'/%3E%3C/svg%3E");
+  display: flex; flex-direction: column; gap: .75em;
+}
+.wa-messages::-webkit-scrollbar { width: 3px; }
+.wa-messages::-webkit-scrollbar-thumb { background: hsla(0,0%,100%,.1); }
+
+.wa-msg { max-width: 78%; padding: .6em .85em .4em; border-radius: .75em; font-size: .84em; line-height: 1.5; position: relative; }
+.wa-msg.incoming {
+  background: var(--wa-incoming); border-bottom-left-radius: .15em; align-self: flex-start;
+}
+.wa-msg.outgoing {
+  background: var(--wa-outgoing); border-bottom-right-radius: .15em; align-self: flex-end; direction: rtl; text-align: right;
+}
+.wa-msg-time { font-size: .65em; color: hsla(0,0%,100%,.35); margin-top: .3em; display: flex; justify-content: flex-end; gap: .35em; align-items: center; }
+.wa-ticks svg { width: .85em; height: .85em; }
+.wa-ticks.read svg path { fill: #53bdeb; }
+
+.wa-typing {
+  background: var(--wa-incoming); border-radius: .75em; border-bottom-left-radius: .15em;
+  padding: .75em 1em; align-self: flex-start; display: none; align-items: center; gap: .35em;
+}
+.wa-typing span {
+  width: 7px; height: 7px; border-radius: 50%; background: hsla(0,0%,100%,.4);
+  animation: wobble .9s infinite;
+}
+.wa-typing span:nth-child(2) { animation-delay: .15s; }
+.wa-typing span:nth-child(3) { animation-delay: .3s; }
+@keyframes wobble { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+
+.wa-footer {
+  background: #1f2c34; padding: .75em 1em;
+  display: flex; align-items: center; gap: .75em;
+  border-top: 1px solid hsla(0,0%,100%,.06); flex-shrink: 0;
+}
+.wa-input {
+  flex: 1; background: #2a3942; border: none; border-radius: 1.5em;
+  padding: .55em 1em; color: hsla(0,0%,100%,.35); font-size: .82em; font-family: inherit;
+  pointer-events: none;
+}
+
+/* ── Dashboard Panel ────────────────────────────────────── */
+.db-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.db-ticker {
+  background: #060608; border-bottom: 1px solid var(--border);
+  padding: .55em 2em; font-size: .68em; color: var(--muted);
+  display: flex; align-items: center; gap: 2em; flex-shrink: 0;
+}
+.db-ticker strong.bad { color: hsla(0,0%,100%,.2); text-decoration: line-through; }
+.db-ticker strong.good { color: var(--text); font-weight: 500; }
+
+.db-stats {
+  background: #0d0d10; border-bottom: 1px solid var(--border);
+  padding: 1em 2em; display: flex; gap: 2.5em; flex-shrink: 0; flex-wrap: wrap;
+}
+.stat { display: flex; flex-direction: column; gap: .1em; }
+.stat-val { font-size: 1.6em; font-weight: 500; letter-spacing: -.03em; color: var(--text); }
+.stat-val.highlight { color: #4ade80; }
+.stat-lbl { font-size: .65em; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+
+.db-pipeline { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.pipeline-header {
+  padding: .75em 2em; border-bottom: 1px solid var(--border);
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5em; flex-shrink: 0;
+}
+.col-head { font-size: .65em; font-weight: 500; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+
+.pipeline-body {
+  flex: 1; overflow-y: auto; padding: 1em 2em;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 1em; align-content: start;
+}
+.pipeline-body::-webkit-scrollbar { width: 3px; }
+.pipeline-body::-webkit-scrollbar-thumb { background: var(--border); }
+
+/* Lead cards */
+.lead-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: .85em; padding: 1em; display: flex; flex-direction: column; gap: .6em;
+  transition: all .3s ease;
+}
+.lead-card.new-card {
+  animation: cardIn .4s ease forwards;
+  border-color: hsla(80,100%,65%,.3);
+  box-shadow: 0 0 20px hsla(80,100%,65%,.08);
+}
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(-12px) scale(.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .5em; }
+.card-name { font-size: .8em; font-weight: 500; color: var(--text); line-height: 1.3; }
+.card-tag {
+  font-size: .6em; font-weight: 600; letter-spacing: .07em; text-transform: uppercase;
+  padding: .25em .6em; border-radius: 2em; white-space: nowrap; flex-shrink: 0;
+}
+.tag-hot { background: hsla(0,100%,65%,.15); color: #ff6b6b; border: 1px solid hsla(0,100%,65%,.2); }
+.tag-warm { background: hsla(35,100%,60%,.15); color: #ffb347; border: 1px solid hsla(35,100%,60%,.2); }
+.tag-rfq { background: hsla(210,100%,65%,.15); color: #64b5f6; border: 1px solid hsla(210,100%,65%,.2); }
+.tag-urgent { background: hsla(0,100%,50%,.15); color: #ff4444; border: 1px solid hsla(0,100%,50%,.2); }
+.tag-technical { background: hsla(270,100%,70%,.15); color: #b39ddb; border: 1px solid hsla(270,100%,70%,.2); }
+.card-meta { display: flex; flex-direction: column; gap: .3em; }
+.card-meta-row { font-size: .72em; color: var(--muted); display: flex; align-items: center; gap: .4em; }
+.card-meta-row strong { color: var(--text); }
+.card-value { font-size: .75em; font-weight: 600; color: #4ade80; }
+.card-branch { font-size: .68em; color: var(--muted); background: hsla(0,0%,100%,.05); padding: .2em .6em; border-radius: 2em; }
+.card-time { font-size: .62em; color: hsla(0,0%,100%,.2); }
+.ai-reply-preview {
+  font-size: .7em; color: hsla(0,0%,100%,.35); line-height: 1.5;
+  background: hsla(0,0%,100%,.03); border-radius: .5em; padding: .5em .65em;
+  border: 1px solid hsla(0,0%,100%,.05); direction: rtl; text-align: right;
+  display: none;
+}
+.ai-reply-preview.visible { display: block; }
+
+/* Processing indicator */
+.processing {
+  display: none; align-items: center; gap: .5em;
+  font-size: .7em; color: var(--muted); padding: .75em 1em;
+  background: hsla(0,0%,100%,.03); border: 1px solid var(--border);
+  border-radius: .75em;
+}
+.processing.active { display: flex; }
+.processing-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #4ade80;
+  animation: blink 1s infinite;
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div class="logo-name">LeadPilot <span>AI</span></div>
+      <div class="live-badge" style="margin-left:.75em;"><div class="live-dot"></div> Live Demo</div>
+    </div>
+    <div style="font-size:.72em;color:var(--muted);">AUTOTHON 2026 · Al Barrak Industrial</div>
+    <button class="trigger-btn" id="triggerBtn" onclick="runDemo()">
+      <svg viewBox="0 0 24 24"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/></svg>
+      Simulate WhatsApp Inquiry
+    </button>
+  </div>
+
+  <!-- Panels -->
+  <div class="panels">
+
+    <!-- WhatsApp -->
+    <div class="wa-panel">
+      <div class="wa-header">
+        <div class="wa-avatar">ع م</div>
+        <div>
+          <div class="wa-contact-name">عبدالله الشمري — مشتريات أرامكو</div>
+          <div class="wa-contact-status" id="waStatus">آخر ظهور اليوم الساعة 9:42 ص</div>
+        </div>
+      </div>
+      <div class="wa-messages" id="waMessages">
+        <div class="wa-msg incoming">
+          مرحباً، نحتاج توريد أبواب صناعية لمستودعات جديدة في الظهران
+          <div class="wa-msg-time">9:38 ص</div>
+        </div>
+        <div class="wa-msg outgoing">
+          أهلاً وسهلاً! سيتواصل معكم أحد مندوبينا قريباً إن شاء الله
+          <div class="wa-msg-time">9:40 ص <span class="wa-ticks"><svg viewBox="0 0 16 11"><path d="M11.071.653a.75.75 0 0 1 .276 1.024L6.158 10.1a.75.75 0 0 1-1.108.162l-3.28-2.854a.75.75 0 0 1 .98-1.136l2.656 2.31 4.64-7.655a.75.75 0 0 1 1.025-.274z" fill="currentColor"/><path d="M14.573.653a.75.75 0 0 1 .276 1.024l-5.19 8.423a.75.75 0 0 1-1.108.162L7.46 9.21l.98-1.136.656.571 4.452-7.367a.75.75 0 0 1 1.025-.625z" fill="currentColor"/></svg></span></div>
+        </div>
+        <!-- Dynamic messages injected here -->
+      </div>
+      <div class="wa-typing" id="waTyping">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="wa-footer">
+        <div class="wa-input">اكتب رسالة</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Dashboard -->
+    <div class="db-panel">
+      <div class="db-ticker">
+        <span>B2B avg response: <strong class="bad">18 hours</strong></span>
+        <span>Al Barrak avg: <strong class="good">4 seconds</strong></span>
+        <span>Speed advantage: <strong class="good">16,200×</strong></span>
+        <span>Win rate (first reply): <strong class="good">70%</strong></span>
+      </div>
+      <div class="db-stats">
+        <div class="stat"><div class="stat-val" id="statResponse">4s</div><div class="stat-lbl">Avg Response</div></div>
+        <div class="stat"><div class="stat-val" id="statToday">12</div><div class="stat-lbl">Inquiries Today</div></div>
+        <div class="stat"><div class="stat-val" id="statHot">3</div><div class="stat-lbl">Hot Prospects</div></div>
+        <div class="stat"><div class="stat-val" id="statValue">42K SAR</div><div class="stat-lbl">Avg Deal Size</div></div>
+        <div class="stat"><div class="stat-val" id="statClosed">2</div><div class="stat-lbl">Deals Closed</div></div>
+      </div>
+      <div class="db-pipeline">
+        <div class="pipeline-header">
+          <div class="col-head">New <span id="newCount" style="opacity:.4;font-size:.85em;">(2)</span></div>
+          <div class="col-head">In Progress <span style="opacity:.4;font-size:.85em;">(3)</span></div>
+          <div class="col-head">Converted <span style="opacity:.4;font-size:.85em;">(2)</span></div>
+        </div>
+        <div class="pipeline-body" id="pipelineBody">
+
+          <!-- Col 1: New -->
+          <div style="display:flex;flex-direction:column;gap:.85em;" id="colNew">
+            <div class="lead-card">
+              <div class="card-top">
+                <div class="card-name">مجموعة الأمل — باب قطاعي مستودع</div>
+                <div class="card-tag tag-warm">Warm</div>
+              </div>
+              <div class="card-meta">
+                <div class="card-meta-row"><strong class="card-value">18,000 SAR</strong></div>
+                <div class="card-meta-row"><span class="card-branch">Riyadh HQ</span></div>
+                <div class="card-time">منذ 14 دقيقة · WhatsApp</div>
+              </div>
+            </div>
+            <div class="processing" id="processingCard">
+              <div class="processing-dot"></div>
+              <span>LeadPilot AI is processing new inquiry...</span>
+            </div>
+          </div>
+
+          <!-- Col 2: In Progress -->
+          <div style="display:flex;flex-direction:column;gap:.85em;">
+            <div class="lead-card">
+              <div class="card-top">
+                <div class="card-name">شركة النهضة — صيانة طارئة موقع الرياض</div>
+                <div class="card-tag tag-urgent">Urgent</div>
+              </div>
+              <div class="card-meta">
+                <div class="card-meta-row"><strong class="card-value">8,500 SAR</strong></div>
+                <div class="card-meta-row"><span class="card-branch">Riyadh HQ · ETA 2hr</span></div>
+                <div class="card-time">منذ 1 ساعة · WhatsApp</div>
+              </div>
+            </div>
+            <div class="lead-card">
+              <div class="card-top">
+                <div class="card-name">مقاولات الشرق — 12 باب شاتر، مشروع الجبيل</div>
+                <div class="card-tag tag-rfq">RFQ</div>
+              </div>
+              <div class="card-meta">
+                <div class="card-meta-row"><strong class="card-value">96,000 SAR</strong></div>
+                <div class="card-meta-row"><span class="card-branch">Jubail Branch</span></div>
+                <div class="card-time">منذ 3 ساعات · WhatsApp</div>
+              </div>
+            </div>
+            <div class="lead-card">
+              <div class="card-top">
+                <div class="card-name">مؤسسة الرافد — مواصفات تقنية باب قطاعي</div>
+                <div class="card-tag tag-technical">Technical</div>
+              </div>
+              <div class="card-meta">
+                <div class="card-meta-row"><strong class="card-value">22,000 SAR</strong></div>
+                <div class="card-meta-row"><span class="card-branch">Dammam Branch</span></div>
+                <div class="card-time">منذ 5 ساعات · WhatsApp</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 3: Converted -->
+          <div style="display:flex;flex-direction:column;gap:.85em;">
+            <div class="lead-card" style="border-color:hsla(145,60%,40%,.2);background:hsla(145,60%,5%,.5);">
+              <div class="card-top">
+                <div class="card-name">أرامكو — عقد صيانة سنوي، 8 مواقع</div>
+                <div class="card-tag tag-hot">Hot → Won</div>
+              </div>
+              <div class="card-meta">
+                <div class="card-meta-row"><strong class="card-value">320,000 SAR ✓</strong></div>
+                <div class="card-meta-row"><span class="card-branch">Dhahran Branch</span></div>
+                <div class="card-time">أُغلق اليوم · WhatsApp → Odoo</div>
+              </div>
+            </div>
+            <div class="lead-card" style="border-color:hsla(145,60%,40%,.2);background:hsla(145,60%,5%,.5);">
+              <div class="card-top">
+                <div class="card-name">مصنع الجبيل — 6 أبواب شاتر صناعية</div>
+                <div class="card-tag tag-rfq">RFQ → Won</div>
+              </div>
+              <div class="card-meta">
+                <div class="card-meta-row"><strong class="card-value">54,000 SAR ✓</strong></div>
+                <div class="card-meta-row"><span class="card-branch">Jubail Branch</span></div>
+                <div class="card-time">أُغلق أمس · WhatsApp → Odoo</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let demoRan = false;
+
+const scenarios = [
+  {
+    customerMsg: "السلام عليكم، أنا من شركة أرامكو السعودية. نحتاج عرض سعر لـ 20 باب شاتر صناعي لمستودعات في الظهران. الكميات كبيرة ونريد تسليم خلال 6 أسابيع.",
+    customerTime: "2:14 م",
+    aiReply: "وعليكم السلام ورحمة الله! أهلاً بكم من أرامكو السعودية.\n\nيسعدنا تقديم عرض سعر لـ 20 باب شاتر صناعي لمستودعاتكم في الظهران. لإعداد عرض دقيق، نحتاج:\n• المقاسات المطلوبة لكل باب\n• مواصفات خاصة (عازل حراري، درجة مقاومة الرياح)\n• هل تحتاجون تركيب وضمان؟\n\nفريق البراق للخدمة 24/7",
+    leadType: 'rfq',
+    leadTag: 'RFQ',
+    tagClass: 'tag-rfq',
+    name: 'أرامكو السعودية — 20 باب شاتر، الظهران',
+    value: '168,000 SAR',
+    branch: 'Dhahran Branch',
+    estimatedValue: 168000,
+  }
+];
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function runDemo() {
+  if (demoRan) return;
+  demoRan = true;
+
+  const btn = document.getElementById('triggerBtn');
+  btn.disabled = true;
+  btn.innerHTML = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" fill="#111113"/></svg> Running...`;
+
+  const s = scenarios[0];
+  const msgs = document.getElementById('waMessages');
+  const typing = document.getElementById('waTyping');
+  const waStatus = document.getElementById('waStatus');
+
+  // 1 — Customer message appears
+  await sleep(500);
+  waStatus.innerHTML = '<span class="wa-online">online</span>';
+  const inMsg = document.createElement('div');
+  inMsg.className = 'wa-msg incoming';
+  inMsg.innerHTML = s.customerMsg.replace(/\n/g, '<br>') + `<div class="wa-msg-time">${s.customerTime}</div>`;
+  inMsg.style.opacity = '0';
+  inMsg.style.transform = 'translateY(8px)';
+  inMsg.style.transition = 'all .3s ease';
+  msgs.appendChild(inMsg);
+  msgs.scrollTop = msgs.scrollHeight;
+  await sleep(50);
+  inMsg.style.opacity = '1';
+  inMsg.style.transform = 'translateY(0)';
+
+  // Show processing card
+  await sleep(300);
+  document.getElementById('processingCard').classList.add('active');
+
+  // 2 — Typing indicator (simulating AI processing)
+  await sleep(800);
+  typing.style.display = 'flex';
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // 3 — Countdown in button
+  const times = [3, 2, 1];
+  for (const t of times) {
+    btn.innerHTML = `⏱ Replying in ${t}s...`;
+    await sleep(1000);
+  }
+
+  // 4 — AI reply sent
+  typing.style.display = 'none';
+  waStatus.innerHTML = '<span style="color:var(--muted);">آخر ظهور الآن</span>';
+
+  const outMsg = document.createElement('div');
+  outMsg.className = 'wa-msg outgoing';
+  outMsg.innerHTML = s.aiReply.replace(/\n/g, '<br>') +
+    `<div class="wa-msg-time">${s.customerTime.replace('14', '14')} <span class="wa-ticks read"><svg viewBox="0 0 16 11"><path d="M11.071.653a.75.75 0 0 1 .276 1.024L6.158 10.1a.75.75 0 0 1-1.108.162l-3.28-2.854a.75.75 0 0 1 .98-1.136l2.656 2.31 4.64-7.655a.75.75 0 0 1 1.025-.274z" fill="currentColor"/><path d="M14.573.653a.75.75 0 0 1 .276 1.024l-5.19 8.423a.75.75 0 0 1-1.108.162L7.46 9.21l.98-1.136.656.571 4.452-7.367a.75.75 0 0 1 1.025-.625z" fill="currentColor"/></svg></span></div>`;
+  outMsg.style.opacity = '0';
+  outMsg.style.transform = 'translateY(8px)';
+  outMsg.style.transition = 'all .35s ease';
+  msgs.appendChild(outMsg);
+  msgs.scrollTop = msgs.scrollHeight;
+  await sleep(50);
+  outMsg.style.opacity = '1';
+  outMsg.style.transform = 'translateY(0)';
+
+  // 5 — New lead card appears in dashboard
+  await sleep(400);
+  document.getElementById('processingCard').classList.remove('active');
+  document.getElementById('statToday').textContent = '13';
+  document.getElementById('statHot').textContent = '3';
+  document.getElementById('newCount').textContent = '(3)';
+
+  const card = document.createElement('div');
+  card.className = 'lead-card new-card';
+  card.innerHTML = `
+    <div class="card-top">
+      <div class="card-name">${s.name}</div>
+      <div class="card-tag ${s.tagClass}">${s.leadTag}</div>
+    </div>
+    <div class="card-meta">
+      <div class="card-meta-row"><strong class="card-value">${s.value}</strong></div>
+      <div class="card-meta-row"><span class="card-branch">${s.branch}</span></div>
+      <div class="card-time">Just now · WhatsApp → Odoo ✓</div>
+    </div>
+    <div class="ai-reply-preview visible">${s.aiReply.replace(/\n/g, '<br>')}</div>
+  `;
+  document.getElementById('colNew').insertBefore(card, document.getElementById('colNew').firstChild);
+
+  // Done
+  await sleep(800);
+  btn.innerHTML = `✓ Demo complete — <span style="opacity:.5;font-size:.9em;">refresh to replay</span>`;
+  btn.style.background = '#4ade80';
+}
+</script>
+</body>
+</html>
