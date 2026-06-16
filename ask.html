@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ask LeadPilot AI — AUTOTHON 2026</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0c;
+  --surface: #111113;
+  --border: hsla(0,0%,100%,.08);
+  --text: #f0f0f2;
+  --muted: hsla(0,0%,100%,.4);
+  --accent: #f0f0f2;
+  --user-bg: #1c1c20;
+  --bot-bg: #16161a;
+  --input-bg: #16161a;
+  --chip-bg: hsla(0,0%,100%,.06);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+html, body { height: 100%; background: var(--bg); color: var(--text); }
+
+/* Layout */
+.shell { display: flex; flex-direction: column; height: 100vh; max-width: 780px; margin: 0 auto; }
+
+/* Header */
+.header {
+  padding: 1em 1.5em;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.header-left { display: flex; align-items: center; gap: .75em; }
+.logo-mark {
+  width: 2em; height: 2em; background: var(--text);
+  border-radius: .45em; display: flex; align-items: center; justify-content: center;
+}
+.logo-mark svg { width: 1.1em; height: 1.1em; fill: #111113; }
+.logo-name { font-size: .92em; font-weight: 500; letter-spacing: -.02em; }
+.logo-name span { color: var(--muted); font-weight: 400; }
+.live-badge {
+  display: flex; align-items: center; gap: .4em;
+  font-size: .65em; font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted);
+}
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: #4ade80;
+  animation: blink 1.6s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.back-link {
+  font-size: .75em; color: var(--muted); text-decoration: none;
+  padding: .4em .85em; border: 1px solid var(--border); border-radius: 2em;
+  transition: color .2s, border-color .2s;
+}
+.back-link:hover { color: var(--text); border-color: hsla(0,0%,100%,.2); }
+
+/* Messages */
+.messages {
+  flex: 1; overflow-y: auto; padding: 1.5em;
+  display: flex; flex-direction: column; gap: 1em;
+  scroll-behavior: smooth;
+}
+.messages::-webkit-scrollbar { width: 4px; }
+.messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.msg { display: flex; gap: .75em; align-items: flex-start; }
+.msg.user { flex-direction: row-reverse; }
+
+.avatar {
+  width: 1.9em; height: 1.9em; border-radius: .45em; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .78em; font-weight: 600;
+}
+.avatar.bot { background: var(--text); color: #111113; }
+.avatar.user { background: var(--user-bg); color: var(--muted); border: 1px solid var(--border); }
+
+.bubble {
+  max-width: 72%; padding: .85em 1.1em; border-radius: 1em;
+  font-size: .88em; line-height: 1.65; color: var(--text);
+}
+.msg.bot .bubble {
+  background: var(--bot-bg); border: 1px solid var(--border);
+  border-top-left-radius: .2em;
+}
+.msg.user .bubble {
+  background: var(--user-bg); border: 1px solid hsla(0,0%,100%,.06);
+  border-top-right-radius: .2em;
+}
+
+/* Typing indicator */
+.typing { display: flex; align-items: center; gap: .35em; padding: .85em 1.1em; }
+.typing span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--muted);
+  animation: bounce .9s infinite;
+}
+.typing span:nth-child(2) { animation-delay: .15s; }
+.typing span:nth-child(3) { animation-delay: .3s; }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+/* Chips */
+.chips { display: flex; flex-wrap: wrap; gap: .5em; padding: 0 1.5em .75em; }
+.chip {
+  font-size: .75em; padding: .4em .85em;
+  border: 1px solid var(--border); border-radius: 2em;
+  background: var(--chip-bg); color: var(--muted); cursor: pointer;
+  transition: all .18s; white-space: nowrap;
+}
+.chip:hover { color: var(--text); border-color: hsla(0,0%,100%,.2); background: hsla(0,0%,100%,.09); }
+
+/* Input */
+.input-row {
+  padding: 1em 1.5em 1.25em;
+  border-top: 1px solid var(--border);
+  display: flex; gap: .75em; align-items: center; flex-shrink: 0;
+}
+.input-wrap {
+  flex: 1; display: flex; align-items: center;
+  background: var(--input-bg); border: 1px solid var(--border);
+  border-radius: 2em; padding: .6em 1.1em; gap: .6em;
+  transition: border-color .2s;
+}
+.input-wrap:focus-within { border-color: hsla(0,0%,100%,.22); }
+.input-wrap input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--text); font-size: .88em; font-family: inherit;
+  caret-color: var(--text);
+}
+.input-wrap input::placeholder { color: var(--muted); }
+
+.send-btn {
+  width: 2.4em; height: 2.4em; background: var(--text); border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  flex-shrink: 0; transition: opacity .18s, transform .15s;
+}
+.send-btn:hover { opacity: .85; transform: scale(1.05); }
+.send-btn:disabled { opacity: .35; cursor: default; transform: none; }
+.send-btn svg { width: 1em; height: 1em; fill: #111113; }
+
+/* Tag in bubble */
+.tag {
+  display: inline-block; font-size: .65em; font-weight: 500; letter-spacing: .07em;
+  text-transform: uppercase; padding: .2em .6em; border-radius: 2em;
+  background: hsla(0,0%,100%,.08); color: var(--muted); margin-bottom: .4em;
+}
+
+/* Stat row */
+.stat-row { display: flex; flex-wrap: wrap; gap: .75em; margin-top: .5em; }
+.stat-pill {
+  background: hsla(0,0%,100%,.06); border: 1px solid var(--border);
+  border-radius: .6em; padding: .4em .75em;
+  font-size: .8em; color: var(--text);
+}
+.stat-pill strong { display: block; font-size: 1.2em; letter-spacing: -.02em; }
+.stat-pill span { color: var(--muted); font-size: .85em; }
+
+/* Mobile */
+@media(max-width:540px){
+  .bubble { max-width: 88%; }
+  .header { padding: .85em 1em; }
+  .messages { padding: 1em; }
+  .input-row { padding: .85em 1em 1em; }
+  .chips { padding: 0 1em .6em; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <div class="logo-name">LeadPilot <span>AI</span></div>
+      <div class="live-badge"><div class="live-dot"></div> Ask me anything</div>
+    </div>
+    <a href="index.html" class="back-link">← Back to project</a>
+  </div>
+
+  <!-- Messages -->
+  <div class="messages" id="messages">
+    <div class="msg bot">
+      <div class="avatar bot">⚡</div>
+      <div class="bubble">
+        <div class="tag">AUTOTHON 2026 · KFU · Industrial AI</div>
+        Hey! I'm the LeadPilot AI assistant. Ask me anything about the project — how it works, the tech stack, business model, market opportunity, or the problem we're solving. I'm here to help judges understand every detail.
+        <div class="stat-row">
+          <div class="stat-pill"><strong>4s</strong><span>Avg response time</span></div>
+          <div class="stat-pill"><strong>16,200×</strong><span>Faster than competitors</span></div>
+          <div class="stat-pill"><strong>70%</strong><span>B2B buyers pick first responder</span></div>
+          <div class="stat-pill"><strong>42K SAR</strong><span>Avg deal size</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Suggested chips -->
+  <div class="chips" id="chips">
+    <div class="chip" onclick="ask(this.textContent)">What problem does this solve?</div>
+    <div class="chip" onclick="ask(this.textContent)">How does the AI work?</div>
+    <div class="chip" onclick="ask(this.textContent)">Who is Al Barrak?</div>
+    <div class="chip" onclick="ask(this.textContent)">What are Challenge 5 and 6?</div>
+    <div class="chip" onclick="ask(this.textContent)">Is it built or just a prototype?</div>
+    <div class="chip" onclick="ask(this.textContent)">What makes you different?</div>
+    <div class="chip" onclick="ask(this.textContent)">Does this replace Odoo?</div>
+    <div class="chip" onclick="ask(this.textContent)">How do you make money?</div>
+  </div>
+
+  <!-- Input -->
+  <div class="input-row">
+    <div class="input-wrap">
+      <input id="input" type="text" placeholder="Ask anything about LeadPilot AI..." autocomplete="off" />
+    </div>
+    <button class="send-btn" id="sendBtn" onclick="sendMsg()">
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<script>
+const KB = [
+  {
+    q: ['what problem','problem solve','solving','pain point','issue','why build','challenge 5','challenge 6','unified'],
+    a: `Al Barrak — a Saudi industrial company with 40+ branches and clients ranging from small contractors to Aramco — receives hundreds of WhatsApp inquiries every day: pricing on roll-up doors, installation quotes, emergency maintenance requests, annual contract discussions.
+
+**The core pain:**
+Every inquiry lands on someone's personal phone. There is no unified inbox, no automatic classification, no response SLA, and no way to know which branch or channel is actually generating revenue.
+
+**The numbers:**
+• Industry average response time: **18 hours**
+• 70% of B2B buyers go with the **first supplier to respond**
+• Average deal size: **42,000 SAR**
+• By the time Al Barrak replies, the customer has already spoken to three competitors
+
+Al Barrak submitted two hackathon challenges that describe exactly this:
+• **Challenge 5** — Unified customer experience: no unified view of the customer journey, lost pre-purchase opportunities
+• **Challenge 6** — Unified sales intelligence: no ROI attribution per channel, no intelligent lead routing
+
+LeadPilot solves both.`
+  },
+  {
+    q: ['how does it work','how it works','process','steps','workflow','mechanism','layer','three layer'],
+    a: `LeadPilot operates in three layers:
+
+**Layer 1 — Intake and response (4 seconds)**
+Customer sends a WhatsApp message. The AI reads it, identifies intent (price inquiry, installation RFQ, maintenance request, partnership inquiry), generates a professional Arabic response using Al Barrak's product catalog and pricing data, and replies instantly. The customer never waits. The sales team never misses a lead.
+
+**Layer 2 — Classification and routing**
+Every lead is automatically tagged:
+• **Hot** — ready to buy, flagged to sales immediately
+• **Warm** — gathering info, nurtured automatically
+• **RFQ** — formal quote needed, routed to the right specialist
+• **Urgent** — maintenance emergency, routed to the nearest branch
+• **Technical** — needs a product specialist
+
+The right person gets the right lead at the right time. For a company with 40+ branches like Al Barrak, this is the difference between chaos and a real sales operation.
+
+**Layer 3 — Pipeline and attribution**
+Every lead is tracked from first message to closed deal. Deal values are logged. The source of every lead is recorded so management can tie a signed Aramco contract back to the original WhatsApp message — directly answering **Challenge 6** (unified sales intelligence).`
+  },
+  {
+    q: ['tech stack','technology','built with','technical','architecture','infrastructure','backend','ai model'],
+    a: `LeadPilot is built on real production infrastructure — not a mockup.
+
+• **AI Engine:** Large language model fine-tuned on industrial Arabic procurement language. Understands part numbers, trade terms, and Saudi business norms.
+• **Channel:** WhatsApp Business API — buyers message an existing WhatsApp number. No new app to download.
+• **Backend:** Node.js server handling webhook routing, message processing, and catalog lookup.
+• **Dashboard:** Real-time web pipeline showing every inquiry, AI reply, lead score, and deal value.
+• **Knowledge base:** Supplier uploads their product catalog; the AI answers spec questions and sends the right documents instantly.
+
+This is running on a live WhatsApp Business number right now. Not a prototype.`
+  },
+  {
+    q: ['business model','revenue','pricing','how do you make money','monetize','cost','subscription','fee'],
+    a: `LeadPilot runs on a **fixed monthly SaaS subscription** model.
+
+• Companies pay a flat monthly fee — no per-message charges, no per-lead costs
+• The pricing is positioned well below the cost of one missed 45K SAR deal
+• Target entry price: **~1,500-3,000 SAR/month** per WhatsApp line
+
+Why fixed fee works: It lets industrial companies predict costs and see immediate ROI. If the AI recovers even one deal per month that would've been lost, it pays for itself 10x over.
+
+Future revenue streams: premium catalog integrations, multi-number enterprise plans, and analytics upgrades.`
+  },
+  {
+    q: ['who is the customer','target customer','target market','customer','audience','use case','who uses','industry','sector','al barrak','sponsor','barrak'],
+    a: `**Al Barrak** is the primary use case and hackathon sponsor. They are a Saudi industrial company specializing in roll-up doors, sectional doors, and installation/maintenance services — with 40+ branches across Saudi Arabia and clients ranging from small contractors all the way up to Aramco.
+
+Al Barrak submitted **Challenge 5** (unified customer experience) and **Challenge 6** (unified sales intelligence) to AUTOTHON 2026 — describing their own problem: hundreds of WhatsApp inquiries per day with no unified inbox, no routing, no ROI attribution, and no visibility into which channel or branch is generating revenue.
+
+**Broader market:** Al Barrak is representative of thousands of Saudi industrial companies in this exact situation. The solution scales to any company that:
+• Has an active WhatsApp Business number for B2B sales
+• Has multiple branches or sales reps
+• Receives procurement inquiries they can't respond to fast enough
+• Wants to know which marketing channels and branches actually close deals`
+  },
+  {
+    q: ['prototype','real','live','working','demo','launched','production'],
+    a: `LeadPilot is **live on real infrastructure** — not a hackathon prototype that we built in 48 hours to demo.
+
+• Running on an actual WhatsApp Business number
+• The dashboard you see on the landing page is a live, interactive interface
+• The AI can receive real WhatsApp messages and reply in 4 seconds
+
+The hackathon gave us the platform to present it formally, but the core system was built and tested before the event. You can interact with the live dashboard right now on the main project page.`
+  },
+  {
+    q: ['different','unique','competitive advantage','vs','compare','competition','why you','why leadpilot','what makes'],
+    a: `Most chatbot tools fail Saudi industrial companies for three reasons:
+
+1. **Not Arabic-first.** Generic tools struggle with Gulf Arabic dialects, industrial terminology, and part number formats. LeadPilot is trained on industrial Arabic.
+2. **Not built for B2B procurement.** Consumer chatbots handle simple FAQs. LeadPilot handles RFQ qualification, spec lookup, and multi-step procurement conversations.
+3. **Not on WhatsApp.** Saudi industrial buyers live on WhatsApp — they don't use web forms or email for procurement.
+
+The comparison vs. traditional process:
+| | Traditional | LeadPilot |
+|---|---|---|
+| Response time | 18 hours avg | 4 seconds |
+| Availability | 9am–5pm weekdays | 24/7/365 |
+| Datasheets | Manual hunt & forward | Instant from catalog |
+| Lead qualification | Inconsistent, often skipped | Automatic on every message |
+| Language | Depends on the rep | Fluent Arabic, always |`
+  },
+  {
+    q: ['market size','tam','sam','opportunity','how big','saudi market','potential'],
+    a: `The opportunity is large and underserved.
+
+**Saudi Arabia context:**
+• Saudi Arabia's non-oil industrial sector is growing rapidly under Vision 2030
+• SME digitalization is a national priority — the government is actively pushing industrial companies online
+• WhatsApp penetration in Saudi Arabia: 95%+ among business professionals
+• Estimated 50,000+ Saudi industrial SMEs that use WhatsApp for procurement communication
+
+**The gap:** Nearly zero AI-powered Arabic-first sales agents exist for B2B industrial procurement. The market is wide open.
+
+**Deal math:** 50,000 companies × 1,500 SAR/month = 75M SAR/year potential at 1% penetration.`
+  },
+  {
+    q: ['feature','features','what can it do','capabilities','what does it do'],
+    a: `LeadPilot has six core capabilities, all designed around Al Barrak's real operation:
+
+**1. WhatsApp Native** — runs on existing WhatsApp Business numbers. Al Barrak's buyers don't download anything new — they message the same number they always have.
+
+**2. Arabic-First AI** — trained on industrial Arabic. Understands roll-up door specs, installation terminology, maintenance request language, and Gulf business norms.
+
+**3. 5-Way Lead Classification** — every inquiry is tagged as Hot, Warm, RFQ, Urgent, or Technical. Urgent maintenance requests go to the nearest branch immediately. Hot leads are flagged to sales. RFQs go to specialists.
+
+**4. Intelligent Branch Routing** — with 40+ branches, routing is Al Barrak's biggest ops challenge. LeadPilot automatically routes each lead to the right branch based on location, product type, and urgency.
+
+**5. Live Pipeline Dashboard** — real-time view of every inquiry, its status, the AI's reply, deal value estimate, and source attribution. Answers Challenge 5 and Challenge 6 in one screen.
+
+**6. Full Attribution** — every closed deal traces back to its original WhatsApp message. Management can finally answer: which branch, which channel, which campaign is generating revenue.`
+  },
+  {
+    q: ['team','who built','founders','builder','built by','ai247'],
+    a: `LeadPilot AI was built by **AI 247 Inc.** — an AI automation agency focused on building practical AI tools for Gulf-region businesses.
+
+The team combines expertise in AI engineering, Arabic NLP, and Saudi B2B sales workflows. This project was submitted to **AUTOTHON 2026** at KFU in the Industrial AI Track.`
+  },
+  {
+    q: ['dashboard','pipeline','crm','tracking','monitor','routing','route','branch','attribution'],
+    a: `The LeadPilot dashboard is built specifically around Al Barrak's operations:
+
+• **Live stats** — inquiries today, avg response time (4s), hot prospects, avg deal size (42K SAR), deals closed
+• **Three-column pipeline** — New, In Progress, Converted
+• **Al Barrak-specific scenarios** — roll-up door bulk orders, sectional door RFQs, emergency maintenance, Aramco annual contracts
+• **Lead classification** — Hot / Warm / RFQ / Urgent / Technical
+• **Branch routing** — each lead shows which of the 40+ branches it was routed to
+• **Source attribution** — which channel (WhatsApp, referral, direct) and which branch closed each deal
+• **Live activity feed** — real-time AI responses with timestamps
+• **Demo trigger** — one button triggers a live WhatsApp inquiry scenario and shows the AI replying in 4 seconds with a countdown timer
+
+The ticker at the top reads: "B2B avg response: 18 hours → Al Barrak avg: 4 seconds → 16,200× faster"
+
+Open the live dashboard from the main project page.`
+  },
+  {
+    q: ['arabic','language','bilingual','english','gulf','saudi dialect'],
+    a: `Arabic is not an afterthought — it's the foundation.
+
+LeadPilot is trained specifically on:
+• **Saudi/Gulf Arabic dialect** used in industrial and procurement contexts
+• **Industrial terminology** — part numbers, equipment names, technical specs in Arabic
+• **B2B business norms** — formal vs. informal address, RFQ language, negotiation phrases
+
+The landing page itself supports both Arabic and English with a language toggle, and the AI can switch between languages based on what the buyer sends.
+
+Most AI tools fail in Arabic because they use general-purpose models. LeadPilot is purpose-built.`
+  },
+  {
+    q: ['stat','number','metric','how fast','response time','16200','4 second','70 percent'],
+    a: `Key numbers behind LeadPilot:
+
+• **4 seconds** — average AI response time to a WhatsApp inquiry
+• **18 hours** — industry average response time (Al Barrak's current baseline)
+• **16,200×** faster than the competition (18 hours = 64,800 seconds ÷ 4)
+• **70%** of B2B buyers go with the first supplier to respond — price is secondary
+• **42,000 SAR** — average Al Barrak deal size
+• **40+** branches that LeadPilot routes leads across automatically
+• **24/7/365** — no weekends, no holidays, no Ramadan breaks
+
+The 70% stat is the most powerful: speed of response often matters more than price. A company like Al Barrak, with Aramco as a client and 40+ branches fielding inquiries, can't afford an 18-hour lag.`
+  },
+  {
+    q: ['next step','roadmap','plan','future','expand','vision','whats next'],
+    a: `Beyond the hackathon, LeadPilot's roadmap includes:
+
+**Short term:**
+• Onboard first paying pilot customers from the Saudi industrial sector
+• Deepen catalog integration (PDF parsing, product database sync)
+• Add multi-agent support so companies with multiple WhatsApp lines can run one dashboard
+
+**Medium term:**
+• Expand to UAE and Gulf industrial markets
+• ERP integration (SAP, Oracle) for real-time inventory and pricing lookup
+• Voice note support — many Saudi buyers send voice messages instead of text
+
+**Long term:**
+• Full AI sales agent that can negotiate, send formal quotations, and track orders end-to-end
+• Sector-specific models for construction, oil & gas, and manufacturing`
+  },
+  {
+    q: ['odoo','crm','existing system','replace','disrupt','integration','current system','erp','what about','migration'],
+    a: `**LeadPilot does not replace Odoo. It makes Odoo better.**
+
+Al Barrak runs Odoo for their CRM and sales operations. LeadPilot sits in front of it as the intake layer.
+
+Here's what changes — and what doesn't:
+
+**What stays exactly the same:**
+The sales team opens Odoo exactly as they do today. No new tool to learn. No data migration. No disruption.
+
+**What changes:**
+Instead of manually entering leads they missed or forgot, they open Odoo and find a pre-qualified pipeline already waiting. Every WhatsApp message that came in overnight was handled by the AI, classified, and pushed into Odoo as a new lead — source-tagged, scored, and ready to action.
+
+**The flow:**
+WhatsApp message → LeadPilot AI replies in 4 seconds → lead classified (Hot/Warm/RFQ/Urgent/Technical) → pushed into Odoo CRM as a new lead with source tag, branch tag, and deal value estimate → sales rep sees it in their normal Odoo pipeline.
+
+**This also solves Challenge 6 completely:**
+Al Barrak said they can't measure ROI per channel or per branch. Odoo already has reporting. LeadPilot just makes sure every lead enters Odoo with clean source data. Their existing Odoo reports now show exactly which WhatsApp inquiry, which branch, and which campaign turned into a signed deal. Zero new reporting infrastructure needed.`
+  },
+  {
+    q: ['challenge 5','challenge 6','challenge five','challenge six','sponsor challenge','hackathon challenge','autothon challenge'],
+    a: `Al Barrak submitted two challenges to AUTOTHON 2026 that LeadPilot directly addresses:
+
+**Challenge 5 — Unified Customer Experience**
+Problem: No unified view of the customer journey. Inquiries arrive on personal phones across 40+ branches with no shared inbox, no response SLA, no way to see what happened before or after any given conversation. Pre-purchase opportunities are lost constantly.
+
+**LeadPilot's answer:** Every WhatsApp message, from every customer, flows into one AI-powered inbox. The customer gets a professional response in 4 seconds. The team gets a full conversation history, lead score, and context — regardless of which branch or rep picks it up next.
+
+**Challenge 6 — Unified Sales Intelligence**
+Problem: No ROI attribution per channel. Management can't tell which branch, which marketing campaign, or which sales rep is actually generating revenue. There's no way to tie a closed deal back to its source.
+
+**LeadPilot's answer:** Al Barrak already uses Odoo for CRM. LeadPilot pushes every WhatsApp lead into Odoo pre-tagged with source, branch, and classification. Their existing Odoo reports now show channel ROI automatically — no new tool, no data migration. The moment a deal closes in Odoo, the source traces back to the original WhatsApp message.`
+  },
+  {
+    q: ['pitch','summary','explain','tell me about','what is leadpilot','overview','brief'],
+    a: `**LeadPilot AI** is an autonomous AI agent that handles B2B WhatsApp inquiries end-to-end without human intervention.
+
+**The sponsor:** Al Barrak — Saudi industrial company, 40+ branches, clients from small contractors to Aramco. They submitted Challenge 5 (unified customer experience) and Challenge 6 (unified sales intelligence) to AUTOTHON 2026.
+
+**The problem:** Hundreds of WhatsApp inquiries per day land on personal phones across 40+ branches. No unified inbox, no routing, no SLA, no attribution. Industry average response: 18 hours. By then the customer has called three competitors.
+
+**The solution (3 layers):**
+1. AI reads every WhatsApp message and replies in 4 seconds in Arabic — with pricing, specs, or an RFQ form
+2. Lead is classified (Hot/Warm/RFQ/Urgent/Technical) and routed to the right branch or specialist automatically
+3. Every deal is tracked from first message to close — management finally sees which branch and channel generates revenue
+
+**Odoo integration:** Al Barrak runs Odoo. LeadPilot doesn't replace it — it sits in front as the intake layer. Every WhatsApp lead is classified and pushed into Odoo in 4 seconds, pre-tagged with source and branch. The sales team's workflow doesn't change. Their Odoo reports now show the channel ROI they've always been missing.
+
+**What's built:** Two live deployable pages — a real-time pipeline dashboard and a bilingual landing page. Running on actual WhatsApp Business infrastructure. Not a prototype.
+
+**Built by:** AI 247 Inc. for **AUTOTHON 2026** at KFU, Industrial AI Track.`
+  }
+];
+
+function findAnswer(q) {
+  const lower = q.toLowerCase();
+  let best = null, bestScore = 0;
+  for (const item of KB) {
+    let score = 0;
+    for (const kw of item.q) {
+      if (lower.includes(kw)) score += kw.split(' ').length;
+    }
+    if (score > bestScore) { bestScore = score; best = item; }
+  }
+  if (best && bestScore > 0) return best.a;
+  return `Good question. LeadPilot AI is an Arabic-first WhatsApp sales agent for Saudi industrial B2B companies — replies to procurement inquiries in 4 seconds, qualifies leads automatically, and never misses a message. Could you rephrase or ask something more specific? I can cover the problem, how it works, tech stack, business model, market opportunity, team, features, or the live demo.`;
+}
+
+function formatMd(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/^• (.*)/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, s => '<ul style="margin:.4em 0 .4em 1.2em;display:flex;flex-direction:column;gap:.25em;">' + s + '</ul>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>')
+    .replace(/\|(.+)\|/g, (_, row) => {
+      const cells = row.split('|').map(c => c.trim());
+      return '<tr>' + cells.map(c => c.startsWith('---') ? '' : `<td style="padding:.3em .7em;border-bottom:1px solid var(--border);font-size:.88em;">${c}</td>`).join('') + '</tr>';
+    })
+    .replace(/(<tr>.*<\/tr>\n?)+/g, s => `<table style="width:100%;border-collapse:collapse;margin:.6em 0;">${s}</table>`);
+}
+
+function addMsg(role, text, instant) {
+  const msgs = document.getElementById('messages');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  const avatar = document.createElement('div');
+  avatar.className = `avatar ${role}`;
+  avatar.textContent = role === 'bot' ? '⚡' : '👤';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  if (instant) {
+    bubble.innerHTML = formatMd(text);
+  } else {
+    bubble.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+    setTimeout(() => {
+      bubble.innerHTML = formatMd(text);
+      msgs.scrollTop = msgs.scrollHeight;
+    }, 600 + Math.random() * 400);
+  }
+  div.append(avatar, bubble);
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function ask(text) {
+  if (!text.trim()) return;
+  document.getElementById('chips').style.display = 'none';
+  addMsg('user', text, true);
+  document.getElementById('input').value = '';
+  setTimeout(() => {
+    const answer = findAnswer(text);
+    addMsg('bot', answer, false);
+  }, 200);
+}
+
+function sendMsg() {
+  const val = document.getElementById('input').value.trim();
+  if (val) ask(val);
+}
+
+document.getElementById('input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendMsg();
+});
+</script>
+</body>
+</html>

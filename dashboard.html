@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeadPilot AI — Live Dashboard</title>
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+/* Dashboard-specific additions only */
+.db-header-wrap {
+  background-color: #111113;
+  border-bottom: 1px solid hsla(0,0%,100%,.08);
+  padding: .75em 2.5em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.db-logo { display: flex; align-items: center; gap: .75em; }
+.db-logo img { width: 5.5em; }
+.db-logo-sep { color: hsla(0,0%,100%,.2); font-size: .85em; }
+.db-logo-name { font-size: .85em; color: hsla(0,0%,100%,.5); }
+.db-header-right { display: flex; align-items: center; gap: 1em; }
+.live-badge {
+  display: flex; align-items: center; gap: .45em;
+  font-size: .68em; font-weight: 500;
+  color: #f0f0f2;
+  letter-spacing: .1em; text-transform: uppercase;
+}
+.live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #f0f0f2;
+  animation: liveblink 1.6s ease-in-out infinite;
+}
+@keyframes liveblink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.client-chip {
+  font-size: .72em;
+  color: hsla(0,0%,100%,.4);
+  border: 1px solid hsla(0,0%,100%,.1);
+  padding: .3em .9em; border-radius: 2em;
+}
+.client-chip strong { color: #f0f0f2; }
+
+/* Stats section — uses AI247 hero pattern on dark bg */
+.db-stats-section {
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, #1a1a2e 0%, #111113 70%);
+  border-bottom: 1px solid hsla(0,0%,100%,.08);
+  padding: 2em 2.5em 1.75em;
+}
+.db-stats-eyebrow {
+  font-size: .68em; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: hsla(0,0%,100%,.3);
+  margin-bottom: 1.25em;
+}
+
+/* Ticker */
+.db-ticker {
+  background: #0a0a0c;
+  border-bottom: 1px solid hsla(0,0%,100%,.06);
+  padding: .6em 2.5em;
+  display: flex; align-items: center; gap: 1.75em;
+  font-size: .7em; color: hsla(0,0%,100%,.35);
+  flex-wrap: wrap;
+}
+.db-ticker strong.bad { color: hsla(0,0%,100%,.3); text-decoration: line-through; }
+.db-ticker strong.good { color: #f0f0f2; font-weight: 500; }
+.db-ticker-sep { color: hsla(0,0%,100%,.1); }
+
+/* Main layout */
+.db-main { display: grid; grid-template-columns: 1fr 300px; min-height: calc(100vh - 250px); }
+.db-pipeline { padding: 2em 2.5em; }
+.db-sidebar {
+  border-left: 1px solid hsla(0,0%,100%,.07);
+  background: #0a0a0c;
+  padding: 1.75em 1.5em;
+  display: flex; flex-direction: column; gap: 2em;
+}
+
+/* Columns */
+.db-cols { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.25em; margin-top: 1.25em; }
+.db-col-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: .85em;
+  padding-bottom: .7em;
+  border-bottom: 1px solid hsla(0,0%,100%,.07);
+}
+.db-col-label {
+  font-size: .68em; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: hsla(0,0%,100%,.35);
+}
+.db-col-count {
+  font-size: .68em; font-weight: 500;
+  background: hsla(0,0%,100%,.07);
+  border: 1px solid hsla(0,0%,100%,.1);
+  color: hsla(0,0%,100%,.4);
+  padding: .15em .55em; border-radius: 2em;
+}
+.db-col-count.red { background: hsla(0,0%,100%,.08); border-color: hsla(0,0%,100%,.12); color: #f0f0f2; }
+.db-col-count.orange { background: hsla(0,0%,100%,.06); border-color: hsla(0,0%,100%,.1); color: hsla(0,0%,100%,.6); }
+.db-col-count.green { background: rgba(34,197,94,.1); border-color: rgba(34,197,94,.2); color: #4ade80; }
+
+/* Lead card — matches AI247 .guide-card (dark mode) */
+.lead-card {
+  background: hsla(0,0%,100%,.06);
+  border: 1px solid hsla(0,0%,100%,.06);
+  border-radius: 1em;
+  padding: 1.75em;
+  margin-bottom: .75em;
+  cursor: pointer;
+  display: flex; flex-direction: column; gap: .85em;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.lead-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.25); }
+.lead-card.is-new {
+  border-color: hsla(0,0%,100%,.15);
+  background: hsla(0,0%,100%,.08);
+  animation: cardIn .35s ease;
+}
+@keyframes cardIn { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+
+/* Card icon box — matches .guide-icon */
+.card-icon-row { display: flex; align-items: center; justify-content: space-between; }
+.card-icon-box {
+  width: 2.5em; height: 2.5em;
+  background: hsla(0,0%,100%,.1);
+  border-radius: .8em;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.card-icon-box svg { width: 1.2em; height: 1.2em; fill: #f0f0f2; }
+
+/* Tag — matches .guide-tag */
+.card-tag {
+  align-self: flex-start;
+  background: hsla(0,0%,100%,.1);
+  border-radius: 2em;
+  font-size: .68em; font-weight: 500;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: .3em .75em;
+  color: hsla(0,0%,100%,.55);
+  white-space: nowrap;
+}
+.tag-hot { background: hsla(0,0%,100%,.14); color: #f0f0f2; }
+.tag-done { background: rgba(34,197,94,.12); color: #4ade80; }
+
+/* Name — matches .guide-name */
+.card-name { font-size: 1.1em; font-weight: 500; letter-spacing: -.01em; line-height: 120%; color: #f0f0f2; }
+
+/* Msg — matches .guide-desc */
+.card-msg {
+  font-size: .92em;
+  color: hsla(0,0%,100%,.5);
+  line-height: 155%;
+  direction: rtl; text-align: right;
+}
+
+.card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+.card-meta { display: flex; align-items: center; gap: .45em; }
+.ch-icon { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ch-wa { background: #25d366; }
+.ch-ig { background: linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045); }
+.ch-icon svg { width: 10px; height: 10px; fill: white; }
+.card-time { font-size: .67em; color: hsla(0,0%,100%,.22); }
+.card-resp { font-size: .68em; font-weight: 500; color: hsla(0,0%,100%,.45); }
+.card-resp.pending { color: hsla(0,0%,100%,.25); }
+.new-pip {
+  display: inline-flex; align-items: center; gap: .3em;
+  font-size: .58em; font-weight: 500;
+  background: #f0f0f2; color: #111113;
+  padding: .2em .55em; border-radius: 2em;
+  letter-spacing: .04em;
+}
+
+/* Sidebar speed card */
+.speed-card {
+  background: hsla(0,0%,100%,.06);
+  border: 1px solid hsla(0,0%,100%,.08);
+  border-radius: 1em;
+  padding: 1.5em;
+}
+.speed-big { font-size: 2.5em; font-weight: 500; color: #f0f0f2; letter-spacing: -2px; line-height: 1; }
+.speed-vs { font-size: .75em; color: hsla(0,0%,100%,.3); margin-top: .4em; display: flex; align-items: center; gap: .4em; }
+.speed-vs .bad { color: hsla(0,0%,100%,.25); text-decoration: line-through; }
+.speed-vs .arr { color: hsla(0,0%,100%,.15); }
+.speed-vs .good { color: #f0f0f2; font-weight: 500; }
+.speed-note { font-size: .7em; color: hsla(0,0%,100%,.28); margin-top: .9em; line-height: 1.65; }
+.speed-note strong { color: hsla(0,0%,100%,.55); }
+
+/* Activity */
+.db-activity { display: flex; flex-direction: column; gap: .5em; }
+.act-item {
+  background: hsla(0,0%,100%,.05);
+  border: 1px solid hsla(0,0%,100%,.07);
+  border-radius: .75em;
+  padding: .7em 1em;
+  display: flex; gap: .65em; align-items: flex-start;
+}
+.act-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.act-dot.g { background: hsla(0,0%,100%,.5); }
+.act-dot.d { background: hsla(0,0%,100%,.2); }
+.act-dot.o { background: hsla(0,0%,100%,.3); }
+.act-text { font-size: .77em; color: hsla(0,0%,100%,.4); line-height: 1.5; }
+.act-text strong { color: hsla(0,0%,100%,.65); font-weight: 500; }
+.act-time { font-size: .64em; color: hsla(0,0%,100%,.18); margin-top: .2em; }
+
+/* Toast */
+.db-toast {
+  position: fixed; top: 68px; right: 2em;
+  background: #111113;
+  border: 1px solid hsla(0,0%,100%,.15);
+  border-radius: 1em;
+  padding: 1.25em 1.5em;
+  width: 310px;
+  z-index: 500;
+  box-shadow: 0 16px 48px rgba(0,0,0,.65);
+  display: none;
+  animation: toastIn .3s ease;
+}
+@keyframes toastIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+.toast-eye {
+  font-size: .64em; font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
+  color: hsla(0,0%,100%,.35); margin-bottom: .5em;
+  display: flex; align-items: center; gap: .4em;
+}
+.toast-dot { width: 6px; height: 6px; border-radius: 50%; background: #f0f0f2; animation: liveblink 1s infinite; }
+.toast-name { font-size: .88em; font-weight: 500; color: #f0f0f2; margin-bottom: .25em; }
+.toast-msg { font-size: .8em; color: hsla(0,0%,100%,.45); direction: rtl; text-align: right; }
+.toast-reply { margin-top: .85em; padding-top: .85em; border-top: 1px solid hsla(0,0%,100%,.08); }
+.toast-rlabel { font-size: .64em; font-weight: 500; color: hsla(0,0%,100%,.5); letter-spacing: .06em; text-transform: uppercase; margin-bottom: .3em; }
+.toast-rtext { font-size: .8em; color: #f0f0f2; direction: rtl; text-align: right; }
+.toast-timer { font-size: .66em; color: hsla(0,0%,100%,.22); margin-top: .35em; }
+
+/* Section top bar */
+.db-section-top { display: flex; align-items: center; justify-content: space-between; }
+.db-section-label {
+  font-size: .68em; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: hsla(0,0%,100%,.3); margin-bottom: .8em;
+}
+</style>
+</head>
+<body class="leftclick-body dark-mode">
+
+<!-- TOAST -->
+<div class="db-toast" id="toast">
+  <div class="toast-eye"><div class="toast-dot"></div>New inbound message</div>
+  <div class="toast-name" id="tName"></div>
+  <div class="toast-msg" id="tMsg"></div>
+  <div class="toast-reply">
+    <div class="toast-rlabel">AI reply sent — <span id="tTimer">sending...</span></div>
+    <div class="toast-rtext" id="tReply"></div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="db-header-wrap">
+  <a href="index.html" class="db-logo" style="text-decoration:none;">
+    <div style="width:1.9em;height:1.9em;background:#f0f0f2;border-radius:.4em;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      <svg viewBox="0 0 24 24" style="width:1.1em;height:1.1em;fill:#111113;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    </div>
+    <span style="font-size:.9em;font-weight:500;letter-spacing:-.02em;color:#f0f0f2;">LeadPilot <span style="color:hsla(0,0%,100%,.35);font-weight:400;">AI</span></span>
+    <span class="db-logo-sep">/</span>
+    <span class="db-logo-name">Dashboard</span>
+  </a>
+  <div class="db-header-right">
+    <div class="client-chip">Client: <strong>مصنع البراك — أبواب الكراجات</strong></div>
+    <div class="live-badge"><div class="live-dot"></div>Live</div>
+    <a class="btn" onclick="triggerLead();return false;" href="#">
+      <div class="btn-text-wrap"><div class="btn-text">Demo incoming</div></div>
+      <div class="btn-icon-box">
+        <img src="assets/images/68a614961526d612ba759e26_Container.svg" alt="" class="btn-icon">
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="db-stats-section">
+  <div class="db-stats-eyebrow">Today's performance</div>
+  <div class="hero-stats" style="justify-content:flex-start;gap:3em;">
+    <div class="hero-stat">
+      <div class="hero-stat-num" id="statTotal">14</div>
+      <div class="hero-stat-label">Inquiries today</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">4s</div>
+      <div class="hero-stat-label">Avg response time</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num" id="statHot">5</div>
+      <div class="hero-stat-label">Hot prospects</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">42K</div>
+      <div class="hero-stat-label">Avg deal size (SAR)</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num" id="statDone">7</div>
+      <div class="hero-stat-label">Deals closed</div>
+    </div>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="db-ticker">
+  <span>B2B avg response: <strong class="bad">18 hours</strong></span>
+  <span class="db-ticker-sep">·</span>
+  <span>البراك avg: <strong class="good">4 seconds</strong></span>
+  <span class="db-ticker-sep">·</span>
+  <span><strong class="good">16,200× faster</strong> than competitors</span>
+  <span class="db-ticker-sep">·</span>
+  <span>First supplier to reply wins <strong class="good">70% of B2B deals.</strong></span>
+  <span class="db-ticker-sep">·</span>
+  <span>Every missed inquiry = <strong class="good">a lost installation contract.</strong></span>
+</div>
+
+<!-- MAIN -->
+<div class="db-main">
+  <!-- PIPELINE -->
+  <div class="db-pipeline">
+    <div class="db-section-top">
+      <h2 class="h2" style="font-size:1.4em;">Lead pipeline</h2>
+    </div>
+    <div class="db-cols">
+
+      <!-- NEW -->
+      <div>
+        <div class="db-col-header">
+          <div class="db-col-label">New</div>
+          <div class="db-col-count red" id="newBadge">3</div>
+        </div>
+        <div id="newCol">
+          <div class="lead-card is-new">
+            <div class="card-icon-row">
+              <div class="card-icon-box"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div>
+              <div class="card-tag tag-hot">Hot</div>
+            </div>
+            <div class="card-name">فهد المالكي — المجمع اللوجستي الوطني</div>
+            <div class="card-msg">نحتاج 15 باب رول أب صناعي مقاس 4×4 متر لمستودعاتنا في الجبيل، كم السعر للكمية؟</div>
+            <div class="card-footer"><div class="card-time">18s ago · WhatsApp</div><div class="card-resp">✓ replied in 3s</div></div>
+          </div>
+
+          <div class="lead-card">
+            <div class="card-icon-row">
+              <div class="card-icon-box"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div>
+              <div class="card-tag">Warm</div>
+            </div>
+            <div class="card-name">سلمى الغامدي — شركة المقاولات والبناء</div>
+            <div class="card-msg">أبغى أشوف كتالوج أبواب الكراج الصناعية مع مواصفات العزل الحراري للبيئة الحارة</div>
+            <div class="card-footer"><div class="card-time">5m ago · WhatsApp</div><div class="card-resp">✓ replied in 4s</div></div>
+          </div>
+
+          <div class="lead-card">
+            <div class="card-icon-row">
+              <div class="card-icon-box"><svg viewBox="0 0 24 24"><path fill="#f0f0f2" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
+              <div class="card-tag">RFQ</div>
+            </div>
+            <div class="card-name">عبدالرحمن الدوسري — مؤسسة الخليج التجارية</div>
+            <div class="card-msg">نطلب عرض سعر رسمي لتوريد وتركيب 8 أبواب كراج كهربائية لمجمع تجاري في الرياض</div>
+            <div class="card-footer"><div class="card-time">11m ago · WhatsApp</div><div class="card-resp">✓ replied in 4s</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IN PROGRESS -->
+      <div>
+        <div class="db-col-header">
+          <div class="db-col-label">In progress</div>
+          <div class="db-col-count orange">4</div>
+        </div>
+        <div>
+          <div class="lead-card">
+            <div class="card-icon-row">
+              <div class="card-icon-box"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div>
+              <div class="card-tag tag-hot">Hot</div>
+            </div>
+            <div class="card-name">سلطان العتيبي — مصانع أرامكو للخدمات</div>
+            <div class="card-msg">مهتمين بعقد صيانة سنوي لـ18 باب صناعي في مواقعنا بالمنطقة الشرقية، أبغى أعرف الشروط</div>
+            <div class="card-footer"><div class="card-time">22m ago · WhatsApp</div><div class="card-resp pending">awaiting confirm</div></div>
+          </div>
+
+          <div class="lead-card">
+            <div class="card-icon-row">
+              <div class="card-icon-box"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div>
+              <div class="card-tag tag-hot">Hot</div>
+            </div>
+            <div class="card-name">ناصر القحطاني — شركة الإنشاء الكبرى</div>
+            <div class="card-msg">الباب الرول الصناعي معطل وعندنا شحنات متأخرة، محتاجين صيانة طارئة اليوم</div>
+            <div class="card-footer"><div class="card-time">35m ago · WhatsApp</div><div class="card-resp">✓ replied in 3s</div></div>
+          </div>
+
+          <div class="lead-card">
+            <div class="card-icon-row">
+              <div class="card-icon-box"><svg viewBox="0 0 24 24"><path fill="#f0f0f2" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg></div>
+              <div class="card-tag">Customs</div>
+            </div>
+            <div class="card-name">هيا الشمري — شركة التطوير العقاري</div>
+            <div class="card-msg">ما المواصفات الفنية لأبواب الكراج المناسبة للمستودعات في البيئة الرطبة بالساحل الغربي؟</div>
+            <div class="card-footer"><div class="card-time">48m ago · WhatsApp</div><div class="card-resp">✓ replied in 4s</div></div>
+          </div>
+
+          <div class="lead-card">
+            <div class="card-icon-row">
+              <div class="card-icon-box"><svg viewBox="0 0 24 24"><path fill="#f0f0f2" d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+              <div class="card-tag">Warm</div>
+            </div>
+            <div class="card-name">أحمد الرشيدي — شركة الطاقة الصناعية</div>
+            <div class="card-msg">نبحث عن مورد معتمد لأبواب الكراج لمشاريعنا القادمة في المنطقة الشرقية، كيف نبدأ؟</div>
+            <div class="card-footer"><div class="card-time">1h ago · WhatsApp</div><div class="card-resp">✓ replied in 5s</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONVERTED -->
+      <div>
+        <div class="db-col-header">
+          <div class="db-col-label">Converted</div>
+          <div class="db-col-count green" id="doneBadge">7</div>
+        </div>
+        <div>
+          <div class="lead-card">
+            <div class="card-icon-row">
+              <div class="card-icon-box"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div>
+              <div class="card-tag tag-done">Closed</div>
+            </div>
+            <div class="card-name">عمر الشهراني — شركة المقاولات الوطنية</div>
+            <div class="card-msg">أكد طلب 20 باب رول أب للمجمع اللوجستي — قيمة الصفقة 87,000 ريال</div>
+            <div class="card-footer"><div class="card-time">2h ago · WhatsApp</div><div class="card-resp">✓ replied in 3s</div></div>
+          </div>
+          <div class="lead-card">
+            <div class="card-icon-row">
+              <div class="card-icon-box"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div>
+              <div class="card-tag tag-done">Closed</div>
+            </div>
+            <div class="card-name">فيصل المطيري — مستودعات أرامكو</div>
+            <div class="card-msg">وقع عقد صيانة سنوي لـ18 باب صناعي في مواقع أرامكو — قيمة العقد 54,000 ريال</div>
+            <div class="card-footer"><div class="card-time">3h ago · WhatsApp</div><div class="card-resp">✓ replied in 4s</div></div>
+          </div>
+          <div class="lead-card">
+            <div class="card-icon-row">
+              <div class="card-icon-box"><svg viewBox="0 0 24 24"><path fill="#f0f0f2" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
+              <div class="card-tag tag-done">Closed</div>
+            </div>
+            <div class="card-name">ريم العمري — مجمع تجاري الرياض</div>
+            <div class="card-msg">أكدت عرض السعر وطلبت الفاتورة — 6 أبواب كراج كهربائية بقيمة 19,800 ريال</div>
+            <div class="card-footer"><div class="card-time">4h ago · WhatsApp</div><div class="card-resp">✓ replied in 5s</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="db-sidebar">
+    <div>
+      <div class="db-section-label">Response speed</div>
+      <div class="speed-card">
+        <div class="speed-big">4s</div>
+        <div class="speed-vs">
+          <span class="bad">47 hours</span>
+          <span class="arr">→</span>
+          <span class="good">4 seconds</span>
+        </div>
+        <div class="speed-note">70% of B2B buyers go with the first supplier to respond. <strong>In garage doors, a contractor waiting on a quote will call three other suppliers. البراك answers first, every time.</strong></div>
+      </div>
+    </div>
+    <div>
+      <div class="db-section-label">Live activity</div>
+      <div class="db-activity" id="actFeed">
+        <div class="act-item"><div class="act-dot g"></div><div><div class="act-text">Replied to <strong>فهد</strong> — bulk pricing for 15 roll-up doors sent</div><div class="act-time">18s ago</div></div></div>
+        <div class="act-item"><div class="act-dot d"></div><div><div class="act-text"><strong>Urgent:</strong> ناصر — industrial door down, emergency maintenance needed</div><div class="act-time">2m ago</div></div></div>
+        <div class="act-item"><div class="act-dot g"></div><div><div class="act-text">Replied to <strong>عبدالرحمن</strong> — installation quote for 8 electric doors sent</div><div class="act-time">11m ago</div></div></div>
+        <div class="act-item"><div class="act-dot o"></div><div><div class="act-text"><strong>Hot prospect:</strong> سلطان — annual maintenance contract, Aramco sites</div><div class="act-time">22m ago</div></div></div>
+        <div class="act-item"><div class="act-dot g"></div><div><div class="act-text">Deal closed — <strong>فيصل</strong> · 54,000 SAR maintenance contract</div><div class="act-time">2h ago</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const leads=[
+  {name:"أحمد الزهراني — شركة المقاولات الكبرى",msg:"نحتاج 10 أبواب رول أب مقاس 5×4 متر لمستودعاتنا الجديدة، كم السعر والوقت اللازم للتركيب؟",tag:"hot",tagTxt:"Hot 🔥",reply:"أهلاً أحمد! باب الرول 5×4 م بالمواصفات الصناعية — السعر 6,800 ريال للوحدة، للكمية 10 وحدات نعطيكم خصم 12%. التركيب خلال أسبوع. أرسل لك عرض رسمي؟",t:"4s"},
+  {name:"هيا الدوسري — شركة التطوير العمراني",msg:"نبحث عن مورد معتمد لأبواب الكراج لمشاريعنا السكنية والتجارية في الرياض، كيف نبدأ؟",tag:"hot",tagTxt:"Hot 🔥",reply:"أهلاً هيا! يسعدنا نكون مورّدكم المعتمد. أرسلت لك كتالوج المنتجات وشروط الشراكة مع قائمة أسعار الكميات. متى يناسبك نتحدث مع فريق المبيعات؟",t:"3s"},
+  {name:"بدر الشمري — مصنع الصناعات الثقيلة",msg:"نطلب عرض سعر رسمي لتوريد وتركيب 6 أبواب صناعية حديدية مقاس 6×5 متر مع أتمتة كاملة",tag:"info",tagTxt:"RFQ",reply:"أهلاً بدر! باب صناعي 6×5 م مع نظام أتمتة — السعر 18,500 ريال للوحدة شامل التركيب والبرمجة. الضمان 3 سنوات. أرسل لك العرض الرسمي؟",t:"4s"},
+  {name:"دلال القحطاني — فندق الرياض الكبير",msg:"عندنا باب كراج كهربائي في مدخل الفندق واقف، نحتاج صيانة طارئة اليوم",tag:"warm",tagTxt:"Warm",reply:"أهلاً دلال! فريق الصيانة الطارئة متاح اليوم. أرسل لك موعد أقرب فني في منطقتكم خلال دقائق. هل الباب لا يفتح أو لا يغلق؟",t:"4s"},
+  {name:"سلطان الغامدي — أرامكو سعودية",msg:"عندنا 12 مستودع في الجبيل محتاجين عقد صيانة سنوي شامل لجميع الأبواب الصناعية",tag:"hot",tagTxt:"Hot 🔥",reply:"أهلاً سلطان! عقد صيانة سنوي لـ12 مستودع — نوفر زيارتين سنويتين لكل موقع + صيانة طارئة 24/7. سأرسل لك العرض التفصيلي وجدول الزيارات. نحدد مكالمة مع مديرنا التقني؟",t:"4s"}
+];
+let idx=0,total=14,hot=5,done=7;
+
+function triggerLead(){
+  const l=leads[idx%leads.length];idx++;
+  const t=document.getElementById('toast');
+  document.getElementById('tName').textContent=l.name;
+  document.getElementById('tMsg').textContent=l.msg;
+  document.getElementById('tReply').textContent='';
+  document.getElementById('tTimer').textContent='sending...';
+  t.style.display='block';
+  let s=0;
+  const iv=setInterval(()=>{
+    s++;document.getElementById('tTimer').textContent=s+'s';
+    if(s>=4){
+      clearInterval(iv);
+      document.getElementById('tReply').textContent=l.reply;
+      document.getElementById('tTimer').textContent='replied in '+l.t;
+      setTimeout(()=>{t.style.display='none';addCard(l);},3000);
+    }
+  },1000);
+}
+
+function addCard(l){
+  total++;if(l.tag==='hot')hot++;done++;
+  document.getElementById('statTotal').textContent=total;
+  document.getElementById('statHot').textContent=hot;
+  document.getElementById('statDone').textContent=done;
+  const nb=document.getElementById('newBadge');nb.textContent=parseInt(nb.textContent)+1;
+  const db=document.getElementById('doneBadge');db.textContent=parseInt(db.textContent)+1;
+  const c=document.createElement('div');
+  c.className='lead-card is-new';
+  c.innerHTML=`<div class="card-icon-row">
+      <div class="card-icon-box"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z" fill="#f0f0f2"/></svg></div>
+      <div class="card-tag tag-${l.tag}">${l.tagTxt}</div>
+    </div>
+    <div class="card-name">${l.name}</div>
+    <div class="card-msg">${l.msg}</div>
+    <div class="card-footer"><div class="card-time">just now · WhatsApp</div><div class="card-resp">✓ replied in ${l.t}</div></div>`;
+  const col=document.getElementById('newCol');col.insertBefore(c,col.firstChild);
+  const f=document.getElementById('actFeed');
+  const item=document.createElement('div');item.className='act-item';
+  item.innerHTML=`<div class="act-dot g"></div><div><div class="act-text">Replied to <strong>${l.name}</strong> — ${l.msg.substring(0,32)}...</div><div class="act-time">just now</div></div>`;
+  f.insertBefore(item,f.firstChild);
+  if(f.children.length>6)f.removeChild(f.lastChild);
+}
+
+setTimeout(()=>setInterval(triggerLead,50000),12000);
+</script>
+</body>
+</html>

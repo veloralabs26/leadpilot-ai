@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en" class="lang-en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LeadPilot AI — Industrial B2B Sales Agent</title>
+<meta name="description" content="AI-powered sales agent for Saudi industrial companies. Replies to WhatsApp procurement inquiries in 4 seconds. 24/7, fully in Arabic.">
+<link rel="stylesheet" href="assets/styles.css">
+<style>
+/* ── Language visibility ────────────────────── */
+.lang-en [data-ar] { display: none !important; }
+.lang-ar [data-en] { display: none !important; }
+.lang-ar { direction: rtl; }
+.lang-ar .lp-nav-links { flex-direction: row-reverse; }
+.lang-ar .lp-hero-btns { flex-direction: row-reverse; }
+
+/* ── Nav ───────────────────────────────────── */
+.lp-nav-wrap {
+  background: #fff;
+  border-bottom: 1px solid hsla(0,0%,0%,.07);
+  padding: .9em 2.5em;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 200;
+}
+.lp-logo { display: flex; align-items: center; gap: .5em; text-decoration: none; }
+.lp-logo-mark {
+  width: 2em; height: 2em; background: #111113;
+  border-radius: .45em; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.lp-logo-mark svg { width: 1.1em; height: 1.1em; fill: #fff; }
+.lp-logo-wordmark { font-size: .92em; font-weight: 500; letter-spacing: -.02em; color: #111113; }
+.lp-logo-wordmark span { color: hsla(0,0%,0%,.35); font-weight: 400; }
+.lp-nav-links { display: flex; align-items: center; gap: 2em; }
+.lp-nav-links a { font-size: .82em; color: hsla(0,0%,0%,.45); text-decoration: none; transition: color .2s; }
+.lp-nav-links a:hover { color: #111113; }
+.lp-nav-right { display: flex; align-items: center; gap: .75em; }
+
+/* Lang toggle */
+.lang-toggle {
+  display: flex; align-items: center;
+  border: 1px solid hsla(0,0%,0%,.12); border-radius: 2em;
+  overflow: hidden; background: #f5f5f7;
+}
+.lang-btn {
+  font-size: .72em; font-weight: 500; letter-spacing: .04em;
+  padding: .35em .75em; cursor: pointer; border: none;
+  background: transparent; color: hsla(0,0%,0%,.45);
+  transition: all .18s; line-height: 1;
+}
+.lang-btn.active { background: #111113; color: #fff; border-radius: 2em; }
+
+/* ── Hero ──────────────────────────────────── */
+.lp-hero {
+  background: radial-gradient(ellipse 90% 60% at 50% 0%, #eeeef8 0%, #fff 65%);
+  padding: 5em 2.5em 4em; text-align: center;
+  border-bottom: 1px solid hsla(0,0%,0%,.06);
+}
+.lp-eyebrow {
+  display: inline-flex; align-items: center; gap: .5em;
+  font-size: .68em; font-weight: 500; letter-spacing: .12em; text-transform: uppercase;
+  color: hsla(0,0%,0%,.4); border: 1px solid hsla(0,0%,0%,.12);
+  padding: .35em 1em; border-radius: 2em; margin-bottom: 1.5em;
+}
+.lp-eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: #111113; animation: blink 1.6s ease-in-out infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+.lp-hero h1 {
+  font-size: clamp(2em, 5vw, 3.4em);
+  font-weight: 500; letter-spacing: -.03em; line-height: 1.1;
+  color: #111113; max-width: 820px; margin: 0 auto .6em;
+}
+.lp-hero h1 em { font-style: normal; color: hsla(0,0%,0%,.35); }
+.lp-hero-sub {
+  font-size: 1.05em; color: hsla(0,0%,0%,.5); line-height: 1.65;
+  max-width: 560px; margin: 0 auto 2em;
+}
+.lp-hero-btns { display: flex; gap: .75em; flex-wrap: wrap; justify-content: center; margin-bottom: 3.5em; }
+.lp-stat-strip {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 2.5em 4em;
+  border-top: 1px solid hsla(0,0%,0%,.07); padding-top: 2.5em;
+  max-width: 900px; margin: 0 auto;
+}
+.lp-stat-strip .hero-stat-num { color: #111113 !important; }
+.lp-stat-strip .hero-stat-label { color: hsla(0,0%,0%,.45) !important; }
+
+/* ── Marquee ───────────────────────────────── */
+.lp-marquee-section {
+  background: #fafafa;
+  border-top: 1px solid hsla(0,0%,0%,.06);
+  border-bottom: 1px solid hsla(0,0%,0%,.06);
+  padding: 1.1em 0; overflow: hidden;
+}
+
+/* ── Sections ──────────────────────────────── */
+.lp-section { padding: 5em 2.5em; }
+.lp-section-inner { max-width: 1100px; margin: 0 auto; }
+.lp-title-wrap { text-align: center; margin-bottom: 3em; }
+.lp-title-wrap h2 { font-size: clamp(1.6em, 3vw, 2.4em); font-weight: 500; letter-spacing: -.025em; color: #111113; }
+.lp-title-wrap p { font-size: .95em; color: hsla(0,0%,0%,.45); max-width: 540px; margin: .6em auto 0; line-height: 1.65; }
+
+/* ── Problem cards ─────────────────────────── */
+.lp-problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25em; }
+.lp-problem-card {
+  background: #fafafa; border: 1px solid hsla(0,0%,0%,.08);
+  border-radius: 1em; padding: 1.75em;
+}
+.lp-problem-num { font-size: .65em; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: hsla(0,0%,0%,.25); margin-bottom: .9em; }
+.lp-problem-title { font-size: 1.05em; font-weight: 500; color: #111113; margin-bottom: .5em; line-height: 1.3; }
+.lp-problem-text { font-size: .88em; color: hsla(0,0%,0%,.45); line-height: 1.65; }
+
+/* ── How it works ──────────────────────────── */
+.lp-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5em; }
+
+/* ── Feature cards ─────────────────────────── */
+.lp-feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25em; }
+.lp-feature-card {
+  background: #fff; border: 1px solid hsla(0,0%,0%,.08);
+  border-radius: 1em; padding: 1.75em;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.lp-feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.08); }
+.lp-feature-icon {
+  width: 2.75em; height: 2.75em; background: #111113;
+  border-radius: .8em; display: flex; align-items: center; justify-content: center; margin-bottom: 1em;
+}
+.lp-feature-icon svg { width: 1.3em; height: 1.3em; fill: #fff; }
+.lp-feature-tag {
+  display: inline-block; background: hsla(0,0%,0%,.06); border-radius: 2em;
+  font-size: .65em; font-weight: 500; letter-spacing: .07em; text-transform: uppercase;
+  padding: .28em .75em; color: hsla(0,0%,0%,.45); margin-bottom: .9em;
+}
+.lp-feature-title { font-size: 1.1em; font-weight: 500; letter-spacing: -.01em; color: #111113; margin-bottom: .45em; }
+.lp-feature-desc { font-size: .88em; color: hsla(0,0%,0%,.45); line-height: 1.65; }
+
+/* ── Dashboard preview ─────────────────────── */
+.lp-preview-section {
+  background: #fafafa;
+  border-top: 1px solid hsla(0,0%,0%,.06);
+  border-bottom: 1px solid hsla(0,0%,0%,.06);
+  padding: 4em 2.5em;
+}
+.lp-preview-inner { max-width: 1100px; margin: 0 auto; }
+.lp-preview-frame {
+  background: #fff; border: 1px solid hsla(0,0%,0%,.1);
+  border-radius: 1.25em; overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,.1); margin-top: 2.5em;
+}
+.lp-preview-bar {
+  background: #f5f5f7; border-bottom: 1px solid hsla(0,0%,0%,.07);
+  padding: .75em 1.25em; display: flex; align-items: center; gap: .5em;
+}
+.lp-preview-dot { width: 10px; height: 10px; border-radius: 50%; }
+.lp-preview-url {
+  flex: 1; text-align: center; font-size: .7em; color: hsla(0,0%,0%,.3);
+  background: hsla(0,0%,0%,.05); border-radius: .4em; padding: .3em 1em;
+  max-width: 300px; margin: 0 auto;
+}
+.lp-preview-iframe { width: 100%; height: 580px; border: none; display: block; }
+
+/* ── Comparison table ──────────────────────── */
+.lp-vs-section { background: #fff; }
+.lp-vs-table { width: 100%; border-collapse: collapse; margin-top: 2.5em; }
+.lp-vs-table th {
+  font-size: .7em; font-weight: 500; letter-spacing: .1em; text-transform: uppercase;
+  color: hsla(0,0%,0%,.35); padding: .75em 1.5em; text-align: left;
+  border-bottom: 1px solid hsla(0,0%,0%,.08);
+}
+.lang-ar .lp-vs-table th { text-align: right; }
+.lp-vs-table th.lp-vs-you { color: #111113; }
+.lp-vs-table td {
+  font-size: .88em; color: hsla(0,0%,0%,.5); padding: .9em 1.5em;
+  border-bottom: 1px solid hsla(0,0%,0%,.05);
+}
+.lang-ar .lp-vs-table td { text-align: right; }
+.lp-vs-table td.lp-vs-label { color: #111113; font-weight: 500; }
+.lp-vs-table td.lp-vs-bad { color: hsla(0,0%,0%,.25); text-decoration: line-through; }
+.lp-vs-table td.lp-vs-good { color: #111113; font-weight: 500; }
+.lp-vs-table tr:last-child td { border-bottom: none; }
+
+/* ── CTA ───────────────────────────────────── */
+.lp-cta-section {
+  background: radial-gradient(ellipse 80% 60% at 50% 80%, #eeeef8 0%, #fff 65%);
+  text-align: center; padding: 6em 2.5em;
+  border-top: 1px solid hsla(0,0%,0%,.06);
+}
+.lp-cta-section h2 { font-size: clamp(1.8em, 4vw, 3em); font-weight: 500; letter-spacing: -.03em; color: #111113; margin-bottom: .5em; }
+.lp-cta-section p { font-size: .95em; color: hsla(0,0%,0%,.45); max-width: 480px; margin: 0 auto 2em; line-height: 1.65; }
+
+/* ── Footer ────────────────────────────────── */
+.lp-footer {
+  background: #fafafa; border-top: 1px solid hsla(0,0%,0%,.07);
+  padding: 2em 2.5em; display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1em;
+}
+.lp-footer-left { display: flex; align-items: center; gap: .75em; }
+.lp-footer-copy { font-size: .72em; color: hsla(0,0%,0%,.3); }
+.lp-footer-link { font-size: .72em; color: hsla(0,0%,0%,.3); text-decoration: none; transition: color .2s; }
+.lp-footer-link:hover { color: #111113; }
+
+/* ── Process step override for light ──────── */
+.process-step { border-color: hsla(0,0%,0%,.07) !important; }
+.process-step-num { color: hsla(0,0%,0%,.25) !important; }
+
+/* ── Mobile ────────────────────────────────── */
+@media (max-width: 768px) {
+  .lp-nav-wrap { padding: .75em 1.25em; }
+  .lp-nav-links { display: none; }
+  .lp-nav-right .btn { font-size: .8em; }
+
+  .lp-hero { padding: 3.5em 1.25em 3em; }
+  .lp-hero h1 { font-size: 1.85em; letter-spacing: -.02em; }
+  .lp-hero-sub { font-size: .92em; }
+  .lp-hero-btns { flex-direction: column; align-items: stretch; gap: .6em; margin-bottom: 2.5em; }
+  .lp-hero-btns .btn { justify-content: center; width: 100%; }
+  .lp-stat-strip { gap: 1.5em 2em; }
+  .hero-stat-num { font-size: 1.75em !important; }
+
+  .lp-section { padding: 3.5em 1.25em; }
+  .lp-title-wrap { margin-bottom: 2em; }
+  .lp-title-wrap h2 { font-size: 1.5em; }
+
+  .lp-problem-grid { grid-template-columns: 1fr; gap: .85em; }
+  .lp-steps { grid-template-columns: 1fr; gap: .85em; }
+  .lp-feature-grid { grid-template-columns: 1fr; gap: .85em; }
+
+  .lp-preview-section { padding: 2.5em 1.25em; }
+  .lp-preview-iframe { height: 280px; }
+
+  .lp-vs-section { padding: 3.5em 1.25em; }
+  .lp-vs-table { font-size: .85em; }
+  .lp-vs-table th, .lp-vs-table td { padding: .65em .75em; font-size: .82em; }
+
+  .lp-cta-section { padding: 4em 1.25em; }
+  .lp-cta-section h2 { font-size: 1.65em; }
+  .lp-cta-section .lp-hero-btns { flex-direction: column; align-items: stretch; }
+  .lp-cta-section .lp-hero-btns .btn { justify-content: center; }
+
+  .lp-marquee-section { padding: .9em 0; }
+  .lp-footer { flex-direction: column; align-items: flex-start; padding: 1.5em 1.25em; gap: .75em; }
+  .lang-toggle { margin-left: auto; }
+}
+</style>
+</head>
+<body class="leftclick-body">
+
+<!-- NAV -->
+<div class="lp-nav-wrap">
+  <a href="index.html" class="lp-logo">
+    <div class="lp-logo-mark"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+    <div class="lp-logo-wordmark">LeadPilot <span>AI</span></div>
+  </a>
+  <div class="lp-nav-links">
+    <a href="#problem"><span data-en>The Problem</span><span data-ar>المشكلة</span></a>
+    <a href="#how"><span data-en>How it works</span><span data-ar>كيف يعمل</span></a>
+    <a href="#features"><span data-en>Features</span><span data-ar>المميزات</span></a>
+    <a href="#vs"><span data-en>vs. Traditional</span><span data-ar>مقارنة</span></a>
+  </div>
+  <div class="lp-nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="ar">عربي</button>
+    </div>
+    <a href="dashboard.html" class="btn">
+      <div class="btn-text-wrap">
+        <div class="btn-text"><span data-en>Live demo</span><span data-ar>العرض المباشر</span></div>
+        <div class="btn-text-hover"><span data-en>Live demo</span><span data-ar>العرض المباشر</span></div>
+      </div>
+      <div class="btn-icon-box">
+        <img src="assets/images/68a614961526d612ba759e26_Container.svg" alt="" class="btn-icon-hover">
+        <img src="assets/images/68a614961526d612ba759e26_Container.svg" alt="" class="btn-icon">
+      </div>
+    </a>
+    <a href="ask.html" class="btn" style="background:#111113;border-color:hsla(0,0%,100%,.12);color:#f0f0f2;">
+      <div class="btn-text-wrap">
+        <div class="btn-text"><span data-en>Ask AI ⚡</span><span data-ar>اسأل الذكاء الاصطناعي ⚡</span></div>
+        <div class="btn-text-hover"><span data-en>Ask AI ⚡</span><span data-ar>اسأل الذكاء الاصطناعي ⚡</span></div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="lp-hero">
+  <div class="lp-eyebrow">
+    <div class="lp-eyebrow-dot"></div>
+    <span data-en>AUTOTHON 2026 · Industrial AI Track</span>
+    <span data-ar>أوتوثون 2026 · مسار الذكاء الصناعي</span>
+  </div>
+  <h1>
+    <span data-en>Your AI agent replies to B2B inquiries <em>in 4 seconds.</em></span>
+    <span data-ar>وكيلك الذكي يرد على استفسارات B2B <em>في 4 ثواني.</em></span>
+  </h1>
+  <p class="lp-hero-sub">
+    <span data-en>While competitors take 18 hours to respond to procurement requests, LeadPilot AI is already answering in Arabic — qualifying leads, sending specs, and moving deals forward.</span>
+    <span data-ar>بينما منافسيك يستغرقون 18 ساعة للرد على طلبات الشراء، LeadPilot AI يرد بالعربية فوراً، يؤهل العملاء، يرسل المواصفات، ويدفع الصفقات للأمام.</span>
+  </p>
+  <div class="lp-hero-btns">
+    <a href="dashboard.html" class="btn">
+      <div class="btn-text-wrap">
+        <div class="btn-text"><span data-en>See live dashboard</span><span data-ar>شاهد الداشبورد المباشر</span></div>
+        <div class="btn-text-hover"><span data-en>See live dashboard</span><span data-ar>شاهد الداشبورد المباشر</span></div>
+      </div>
+      <div class="btn-icon-box">
+        <img src="assets/images/68a614961526d612ba759e26_Container.svg" alt="" class="btn-icon-hover">
+        <img src="assets/images/68a614961526d612ba759e26_Container.svg" alt="" class="btn-icon">
+      </div>
+    </a>
+    <a href="#how" class="btn" style="background:hsla(0,0%,0%,.05);border-color:hsla(0,0%,0%,.1);color:#111113;">
+      <div class="btn-text-wrap">
+        <div class="btn-text"><span data-en>How it works</span><span data-ar>كيف يعمل</span></div>
+        <div class="btn-text-hover"><span data-en>How it works</span><span data-ar>كيف يعمل</span></div>
+      </div>
+      <div class="btn-icon-box" style="background:hsla(0,0%,0%,.08);">
+        <img src="assets/images/68a614961526d612ba759e26_Container.svg" alt="" class="btn-icon-hover">
+        <img src="assets/images/68a614961526d612ba759e26_Container.svg" alt="" class="btn-icon">
+      </div>
+    </a>
+  </div>
+  <div class="lp-stat-strip">
+    <div class="hero-stat">
+      <div class="hero-stat-num">4s</div>
+      <div class="hero-stat-label"><span data-en>Avg response time</span><span data-ar>متوسط وقت الرد</span></div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">16,200×</div>
+      <div class="hero-stat-label"><span data-en>Faster than competitors</span><span data-ar>أسرع من المنافسين</span></div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">70%</div>
+      <div class="hero-stat-label"><span data-en>B2B buyers go with first reply</span><span data-ar>من مشتري B2B يختارون أول من يرد</span></div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">45K SAR</div>
+      <div class="hero-stat-label"><span data-en>Avg industrial deal size</span><span data-ar>متوسط قيمة الصفقة الصناعية</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="lp-marquee-section">
+  <div class="marquee-wrap">
+    <div class="marquee-track" style="gap:3em;padding:0 1.5em;">
+      <span class="marquee-item">شركة النهضة الصناعية</span>
+      <span class="marquee-item">مصنع الجبيل</span>
+      <span class="marquee-item">مجموعة الأمل للمعدات</span>
+      <span class="marquee-item">مقاولات الشرق</span>
+      <span class="marquee-item">مؤسسة الرافد</span>
+      <span class="marquee-item">شركة الفجر الصناعية</span>
+      <span class="marquee-item">مصنع الوطن</span>
+      <span class="marquee-item">الخليج للمعدات الصناعية</span>
+      <span class="marquee-item">شركة النهضة الصناعية</span>
+      <span class="marquee-item">مصنع الجبيل</span>
+      <span class="marquee-item">مجموعة الأمل للمعدات</span>
+      <span class="marquee-item">مقاولات الشرق</span>
+      <span class="marquee-item">مؤسسة الرافد</span>
+      <span class="marquee-item">شركة الفجر الصناعية</span>
+      <span class="marquee-item">مصنع الوطن</span>
+      <span class="marquee-item">الخليج للمعدات الصناعية</span>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section id="problem" class="lp-section" style="background:#fafafa;border-top:1px solid hsla(0,0%,0%,.05);">
+  <div class="lp-section-inner">
+    <div class="lp-title-wrap">
+      <h2><span data-en>Every hour you don't reply is a deal lost.</span><span data-ar>كل ساعة بدون رد = صفقة خسرتها.</span></h2>
+      <p><span data-en>Saudi industrial buyers move fast. The first supplier to respond wins — no matter the price.</span><span data-ar>المشتري الصناعي السعودي لا ينتظر. أول مورد يرد يأخذ الصفقة، بغض النظر عن السعر.</span></p>
+    </div>
+    <div class="lp-problem-grid">
+      <div class="lp-problem-card">
+        <div class="lp-problem-num"><span data-en>Problem 01</span><span data-ar>المشكلة 01</span></div>
+        <div class="lp-problem-title"><span data-en>Inquiries go unanswered for 18+ hours</span><span data-ar>الاستفسارات تبقى بلا رد لـ 18 ساعة</span></div>
+        <div class="lp-problem-text"><span data-en>Procurement teams send RFQs on WhatsApp at all hours. Your sales team works 9-to-5. By the time they reply, the buyer has already moved on.</span><span data-ar>فرق المشتريات ترسل طلبات الأسعار على WhatsApp في أي وقت. فريق المبيعات يعمل 9-5. بحلول وقت ردهم، المشتري انتقل لمورد آخر.</span></div>
+      </div>
+      <div class="lp-problem-card">
+        <div class="lp-problem-num"><span data-en>Problem 02</span><span data-ar>المشكلة 02</span></div>
+        <div class="lp-problem-title"><span data-en>Technical questions stall the sale</span><span data-ar>الأسئلة التقنية تعطل الصفقة</span></div>
+        <div class="lp-problem-text"><span data-en>Buyers ask for datasheets, part numbers, MOQ, delivery timelines, and certs. Each question adds hours of delay to your response cycle.</span><span data-ar>المشترون يطلبون datasheets، أرقام القطع، الكميات الدنيا، مواعيد التوصيل، والشهادات. كل سؤال يضيف ساعات من التأخير.</span></div>
+      </div>
+      <div class="lp-problem-card">
+        <div class="lp-problem-num"><span data-en>Problem 03</span><span data-ar>المشكلة 03</span></div>
+        <div class="lp-problem-title"><span data-en>No Arabic-first AI built for industry</span><span data-ar>لا يوجد ذكاء اصطناعي بالعربية للصناعة</span></div>
+        <div class="lp-problem-text"><span data-en>Generic chatbots aren't built for industrial Arabic, part numbers, or B2B qualification. LeadPilot is built for exactly this.</span><span data-ar>الشاتبوتات العامة مب مبنية للعربية الصناعية أو أرقام القطع أو تأهيل عملاء B2B. LeadPilot مبني لهذا بالضبط.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="lp-section" style="background:#fff;border-top:1px solid hsla(0,0%,0%,.05);">
+  <div class="lp-section-inner">
+    <div class="lp-title-wrap">
+      <h2><span data-en>From inquiry to closed deal.</span><span data-ar>من الاستفسار إلى إغلاق الصفقة.</span></h2>
+      <p><span data-en>LeadPilot integrates with WhatsApp and handles the full first-touch response — in Arabic, in seconds.</span><span data-ar>LeadPilot يتكامل مع WhatsApp ويتولى أول رد كامل بالعربية خلال ثوانٍ.</span></p>
+    </div>
+    <div class="process-steps lp-steps">
+      <div class="process-step">
+        <div class="process-step-num"><span data-en>Step 01</span><span data-ar>الخطوة 01</span></div>
+        <h3 class="h5 process-step-title"><span data-en>Buyer sends inquiry</span><span data-ar>المشتري يرسل استفساره</span></h3>
+        <p class="p"><span data-en>A procurement manager messages your WhatsApp asking about pricing, availability, or specs — at any hour.</span><span data-ar>مدير المشتريات يراسل WhatsApp الخاص بك يسأل عن الأسعار أو التوفر أو المواصفات، في أي وقت.</span></p>
+      </div>
+      <div class="process-step">
+        <div class="process-step-num"><span data-en>Step 02</span><span data-ar>الخطوة 02</span></div>
+        <h3 class="h5 process-step-title"><span data-en>AI replies in 4 seconds</span><span data-ar>الذكاء الاصطناعي يرد في 4 ثواني</span></h3>
+        <p class="p"><span data-en>LeadPilot identifies the product, checks your catalog, and replies in fluent Arabic with pricing, specs, or an RFQ form.</span><span data-ar>LeadPilot يحدد المنتج، يفحص كتالوجك، ويرد بعربية سلسة مع الأسعار أو المواصفات أو نموذج عرض السعر.</span></p>
+      </div>
+      <div class="process-step">
+        <div class="process-step-num"><span data-en>Step 03</span><span data-ar>الخطوة 03</span></div>
+        <h3 class="h5 process-step-title"><span data-en>Lead is qualified and tracked</span><span data-ar>العميل يُصنَّف ويُتتبَّع</span></h3>
+        <p class="p"><span data-en>The inquiry is classified (Hot / Warm / RFQ / Complaint), scored by deal value, and placed on your live pipeline automatically.</span><span data-ar>يتم تصنيف الاستفسار (ساخن / دافئ / RFQ / شكوى)، تقييمه بقيمة الصفقة، ووضعه تلقائياً في خط الأنابيب المباشر.</span></p>
+      </div>
+      <div class="process-step">
+        <div class="process-step-num"><span data-en>Step 04</span><span data-ar>الخطوة 04</span></div>
+        <h3 class="h5 process-step-title"><span data-en>Your team closes the deal</span><span data-ar>فريقك يُغلق الصفقة</span></h3>
+        <p class="p process-optional"><span data-en>Your sales team steps in only when the lead is warm and qualified. No cold outreach, no missed messages.</span><span data-ar>فريق المبيعات يتدخل فقط عندما يكون العميل مؤهلاً وجاهزاً. لا رسائل فائتة، لا مجهود ضائع.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="lp-section" style="background:#fafafa;border-top:1px solid hsla(0,0%,0%,.05);">
+  <div class="lp-section-inner">
+    <div class="lp-title-wrap">
+      <h2><span data-en>Built for industrial B2B in Saudi Arabia.</span><span data-ar>مبني للـ B2B الصناعي في السعودية.</span></h2>
+      <p><span data-en>Every feature is designed for how Saudi industrial companies actually buy and sell.</span><span data-ar>كل ميزة مصممة لكيفية شراء وبيع الشركات الصناعية السعودية.</span></p>
+    </div>
+    <div class="lp-feature-grid">
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div>
+        <div class="lp-feature-tag"><span data-en>WhatsApp Native</span><span data-ar>واتساب أصلي</span></div>
+        <div class="lp-feature-title"><span data-en>Runs where buyers already are</span><span data-ar>يعمل حيث المشترون موجودون</span></div>
+        <div class="lp-feature-desc"><span data-en>No new app to download. Buyers message your existing WhatsApp Business number and get instant replies.</span><span data-ar>لا تطبيق جديد للتنزيل. المشترون يراسلون رقم WhatsApp Business الحالي ويحصلون على ردود فورية.</span></div>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon"><svg viewBox="0 0 24 24"><path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/></svg></div>
+        <div class="lp-feature-tag"><span data-en>Arabic-First AI</span><span data-ar>عربي أولاً</span></div>
+        <div class="lp-feature-title"><span data-en>Fluent industrial Arabic</span><span data-ar>عربية صناعية طليقة</span></div>
+        <div class="lp-feature-desc"><span data-en>Trained on industrial procurement language. Understands part numbers, trade terms, and Saudi business norms.</span><span data-ar>مدرَّب على لغة المشتريات الصناعية. يفهم أرقام القطع والشروط التجارية وأعراف الأعمال السعودية.</span></div>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg></div>
+        <div class="lp-feature-tag"><span data-en>Lead Qualification</span><span data-ar>تأهيل العملاء</span></div>
+        <div class="lp-feature-title"><span data-en>Auto-scores every inquiry</span><span data-ar>يُقيِّم كل استفسار تلقائياً</span></div>
+        <div class="lp-feature-desc"><span data-en>Classifies each message as Hot / Warm / RFQ / Complaint and estimates deal value. Your team only touches qualified leads.</span><span data-ar>يصنف كل رسالة (ساخن / دافئ / RFQ / شكوى) ويُقدِّر قيمة الصفقة. فريقك يتعامل فقط مع العملاء المؤهلين.</span></div>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon"><svg viewBox="0 0 24 24"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg></div>
+        <div class="lp-feature-tag"><span data-en>Technical Knowledge</span><span data-ar>المعرفة التقنية</span></div>
+        <div class="lp-feature-title"><span data-en>Sends specs, certs, and datasheets</span><span data-ar>يرسل المواصفات والشهادات والـ datasheets</span></div>
+        <div class="lp-feature-desc"><span data-en>Upload your product catalog. LeadPilot instantly answers spec questions and sends the right PDF — no human needed.</span><span data-ar>ارفع كتالوج منتجاتك. LeadPilot يجيب على أسئلة المواصفات ويرسل الـ PDF المناسب فوراً بدون تدخل بشري.</span></div>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon"><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg></div>
+        <div class="lp-feature-tag"><span data-en>Live Dashboard</span><span data-ar>داشبورد مباشر</span></div>
+        <div class="lp-feature-title"><span data-en>Full pipeline visibility</span><span data-ar>رؤية كاملة لخط الأنابيب</span></div>
+        <div class="lp-feature-desc"><span data-en>See every inquiry, its status, deal value, and AI reply in real time. New leads, in-progress negotiations, closed deals.</span><span data-ar>شاهد كل استفسار وحالته وقيمة صفقته ورد الذكاء الاصطناعي في الوقت الفعلي.</span></div>
+      </div>
+      <div class="lp-feature-card">
+        <div class="lp-feature-icon"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg></div>
+        <div class="lp-feature-tag"><span data-en>24/7 Availability</span><span data-ar>متاح 24/7</span></div>
+        <div class="lp-feature-title"><span data-en>Never miss an inquiry again</span><span data-ar>لا تفوِّت استفساراً بعد الآن</span></div>
+        <div class="lp-feature-desc"><span data-en>Buyers send RFQs at night, weekends, during Ramadan. LeadPilot responds the same second, every time.</span><span data-ar>المشترون يرسلون طلباتهم ليلاً وفي عطل نهاية الأسبوع وفي رمضان. LeadPilot يرد في نفس الثانية، في كل مرة.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD PREVIEW -->
+<div class="lp-preview-section">
+  <div class="lp-preview-inner">
+    <div class="lp-title-wrap" style="margin-bottom:0;">
+      <h2><span data-en>See it in action.</span><span data-ar>شاهده في العمل.</span></h2>
+      <p><span data-en>Live pipeline dashboard. Click "Demo incoming" to trigger a real AI response flow.</span><span data-ar>داشبورد خط الأنابيب المباشر. اضغط "Demo incoming" لتشغيل سيناريو الرد الفوري.</span></p>
+    </div>
+    <div class="lp-preview-frame">
+      <div class="lp-preview-bar">
+        <div class="lp-preview-dot" style="background:#ff5f57;"></div>
+        <div class="lp-preview-dot" style="background:#febc2e;margin-left:6px;"></div>
+        <div class="lp-preview-dot" style="background:#28c840;margin-left:6px;"></div>
+        <div class="lp-preview-url">leadpilot.ai / dashboard</div>
+      </div>
+      <iframe src="dashboard.html" class="lp-preview-iframe" title="LeadPilot Live Dashboard" loading="lazy"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- VS TABLE -->
+<section id="vs" class="lp-section lp-vs-section" style="border-top:1px solid hsla(0,0%,0%,.05);">
+  <div class="lp-section-inner">
+    <div class="lp-title-wrap">
+      <h2><span data-en>LeadPilot vs. your current process.</span><span data-ar>LeadPilot مقابل طريقتك الحالية.</span></h2>
+      <p><span data-en>The numbers aren't close.</span><span data-ar>الأرقام لا تقارن.</span></p>
+    </div>
+    <table class="lp-vs-table">
+      <thead>
+        <tr>
+          <th><span data-en>Scenario</span><span data-ar>السيناريو</span></th>
+          <th><span data-en>Traditional (human)</span><span data-ar>الطريقة التقليدية</span></th>
+          <th class="lp-vs-you"><span data-en>LeadPilot AI</span><span data-ar>LeadPilot AI</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="lp-vs-label"><span data-en>Response to WhatsApp inquiry</span><span data-ar>الرد على استفسار WhatsApp</span></td>
+          <td class="lp-vs-bad"><span data-en>18 hours avg</span><span data-ar>18 ساعة متوسطاً</span></td>
+          <td class="lp-vs-good"><span data-en>4 seconds</span><span data-ar>4 ثواني</span></td>
+        </tr>
+        <tr>
+          <td class="lp-vs-label"><span data-en>Availability</span><span data-ar>التوفر</span></td>
+          <td class="lp-vs-bad"><span data-en>9am – 5pm, weekdays</span><span data-ar>9 صباحاً – 5 مساءً، أيام العمل</span></td>
+          <td class="lp-vs-good"><span data-en>24/7/365</span><span data-ar>24/7/365</span></td>
+        </tr>
+        <tr>
+          <td class="lp-vs-label"><span data-en>Sending technical datasheets</span><span data-ar>إرسال الـ datasheets التقنية</span></td>
+          <td class="lp-vs-bad"><span data-en>Rep has to find and forward manually</span><span data-ar>المندوب يبحث عنها ويرسلها يدوياً</span></td>
+          <td class="lp-vs-good"><span data-en>Instant, from catalog</span><span data-ar>فوري، من الكتالوج</span></td>
+        </tr>
+        <tr>
+          <td class="lp-vs-label"><span data-en>Lead qualification</span><span data-ar>تأهيل العملاء</span></td>
+          <td class="lp-vs-bad"><span data-en>Manual, inconsistent, often skipped</span><span data-ar>يدوي، غير منتظم، يُهمل كثيراً</span></td>
+          <td class="lp-vs-good"><span data-en>Automatic on every message</span><span data-ar>تلقائي مع كل رسالة</span></td>
+        </tr>
+        <tr>
+          <td class="lp-vs-label"><span data-en>Language</span><span data-ar>اللغة</span></td>
+          <td class="lp-vs-bad"><span data-en>Depends on the rep</span><span data-ar>يعتمد على المندوب</span></td>
+          <td class="lp-vs-good"><span data-en>Fluent Arabic, always</span><span data-ar>عربية طليقة دائماً</span></td>
+        </tr>
+        <tr>
+          <td class="lp-vs-label"><span data-en>Cost per qualified lead</span><span data-ar>تكلفة العميل المؤهل</span></td>
+          <td class="lp-vs-bad"><span data-en>Sales rep salary ÷ leads handled</span><span data-ar>راتب المندوب ÷ العملاء</span></td>
+          <td class="lp-vs-good"><span data-en>Fixed monthly fee</span><span data-ar>رسوم شهرية ثابتة</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="lp-cta-section">
+  <h2><span data-en>Ready to stop losing deals to slow replies?</span><span data-ar>مستعد توقف خسارة الصفقات بسبب بطء الرد؟</span></h2>
+  <p><span data-en>LeadPilot is built on real infrastructure — running right now on a live WhatsApp Business number. This isn't a prototype.</span><span data-ar>LeadPilot مبني على بنية تحتية حقيقية، يعمل الآن على رقم WhatsApp Business فعلي. هذا مش نموذج.</span></p>
+  <div class="lp-hero-btns" style="justify-content:center;">
+    <a href="dashboard.html" class="btn">
+      <div class="btn-text-wrap">
+        <div class="btn-text"><span data-en>See live dashboard</span><span data-ar>شاهد الداشبورد المباشر</span></div>
+        <div class="btn-text-hover"><span data-en>See live dashboard</span><span data-ar>شاهد الداشبورد المباشر</span></div>
+      </div>
+      <div class="btn-icon-box">
+        <img src="assets/images/68a614961526d612ba759e26_Container.svg" alt="" class="btn-icon-hover">
+        <img src="assets/images/68a614961526d612ba759e26_Container.svg" alt="" class="btn-icon">
+      </div>
+    </a>
+  </div>
+  <p style="margin-top:1.5em;font-size:.72em;color:hsla(0,0%,0%,.25);">LeadPilot AI · AUTOTHON 2026 · KFU</p>
+</section>
+
+<!-- FOOTER -->
+<div class="lp-footer">
+  <div class="lp-footer-left">
+    <div class="lp-logo-mark" style="width:1.6em;height:1.6em;"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+    <span class="lp-footer-copy">LeadPilot AI · AUTOTHON 2026</span>
+  </div>
+  <div style="display:flex;gap:1.5em;align-items:center;flex-wrap:wrap;">
+    <a href="dashboard.html" class="lp-footer-link"><span data-en>Live Dashboard</span><span data-ar>الداشبورد المباشر</span></a>
+    <a href="#how" class="lp-footer-link"><span data-en>How it works</span><span data-ar>كيف يعمل</span></a>
+    <span class="lp-footer-copy">© 2026 AI 247 Inc.</span>
+  </div>
+</div>
+
+<script>
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});
+
+// Language toggle
+const html = document.documentElement;
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const lang = btn.dataset.lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    html.className = 'lang-' + lang;
+    html.lang = lang;
+    document.title = lang === 'ar'
+      ? 'LeadPilot AI — وكيل مبيعات B2B الصناعي'
+      : 'LeadPilot AI — Industrial B2B Sales Agent';
+  });
+});
+</script>
+</body>
+</html>
