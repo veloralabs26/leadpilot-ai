@@ -162,7 +162,10 @@
 .ch-icon { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .ch-wa { background: #25d366; }
 .ch-ig { background: linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045); }
+.ch-tw { background: #000; }
+.ch-web { background: #0071dc; }
 .ch-icon svg { width: 10px; height: 10px; fill: white; }
+.ch-badge { display: inline-flex; align-items: center; gap: .35em; font-size: .67em; color: hsla(0,0%,100%,.35); }
 .card-time { font-size: .67em; color: hsla(0,0%,100%,.22); }
 .card-resp { font-size: .68em; font-weight: 500; color: hsla(0,0%,100%,.45); }
 .card-resp.pending { color: hsla(0,0%,100%,.25); }
@@ -340,7 +343,7 @@
             </div>
             <div class="card-name">فهد المالكي — المجمع اللوجستي الوطني</div>
             <div class="card-msg">نحتاج 15 باب رول أب صناعي مقاس 4×4 متر لمستودعاتنا في الجبيل، كم السعر للكمية؟</div>
-            <div class="card-footer"><div class="card-time">18s ago · WhatsApp</div><div class="card-resp">✓ replied in 3s</div></div>
+            <div class="card-footer"><div class="card-meta"><div class="ch-icon ch-wa"><svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:white"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div><span class="card-time">18s ago</span></div><div class="card-resp">✓ replied in 3s</div></div>
           </div>
 
           <div class="lead-card">
@@ -350,7 +353,7 @@
             </div>
             <div class="card-name">سلمى الغامدي — شركة المقاولات والبناء</div>
             <div class="card-msg">أبغى أشوف كتالوج أبواب الكراج الصناعية مع مواصفات العزل الحراري للبيئة الحارة</div>
-            <div class="card-footer"><div class="card-time">5m ago · WhatsApp</div><div class="card-resp">✓ replied in 4s</div></div>
+            <div class="card-footer"><div class="card-meta"><div class="ch-icon ch-ig"><svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.265.07 1.645.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.265.058-1.645.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0 1.837a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8z"/></svg></div><span class="card-time">5m ago</span></div><div class="card-resp">✓ replied in 4s</div></div>
           </div>
 
           <div class="lead-card">
@@ -360,7 +363,7 @@
             </div>
             <div class="card-name">عبدالرحمن الدوسري — مؤسسة الخليج التجارية</div>
             <div class="card-msg">نطلب عرض سعر رسمي لتوريد وتركيب 8 أبواب كراج كهربائية لمجمع تجاري في الرياض</div>
-            <div class="card-footer"><div class="card-time">11m ago · WhatsApp</div><div class="card-resp">✓ replied in 4s</div></div>
+            <div class="card-footer"><div class="card-meta"><div class="ch-icon ch-wa"><svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:white"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div><span class="card-time">11m ago</span></div><div class="card-resp">✓ replied in 4s</div></div>
           </div>
         </div>
       </div>
@@ -379,7 +382,7 @@
             </div>
             <div class="card-name">سلطان العتيبي — مصانع أرامكو للخدمات</div>
             <div class="card-msg">مهتمين بعقد صيانة سنوي لـ18 باب صناعي في مواقعنا بالمنطقة الشرقية، أبغى أعرف الشروط</div>
-            <div class="card-footer"><div class="card-time">22m ago · WhatsApp</div><div class="card-resp pending">awaiting confirm</div></div>
+            <div class="card-footer"><div class="card-meta"><div class="ch-icon ch-wa" style="width:18px;height:18px;border-radius:50%;background:#25d366;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:white"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div><span class="card-time">22m ago</span></div><div class="card-resp pending">awaiting confirm</div></div>
           </div>
 
           <div class="lead-card">
@@ -389,7 +392,7 @@
             </div>
             <div class="card-name">ناصر القحطاني — شركة الإنشاء الكبرى</div>
             <div class="card-msg">الباب الرول الصناعي معطل وعندنا شحنات متأخرة، محتاجين صيانة طارئة اليوم</div>
-            <div class="card-footer"><div class="card-time">35m ago · WhatsApp</div><div class="card-resp">✓ replied in 3s</div></div>
+            <div class="card-footer"><div class="card-meta"><div class="ch-icon ch-wa"><svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:white"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div><span class="card-time">35m ago</span></div><div class="card-resp">✓ replied in 3s</div></div>
           </div>
 
           <div class="lead-card">
@@ -399,7 +402,7 @@
             </div>
             <div class="card-name">هيا الشمري — شركة التطوير العقاري</div>
             <div class="card-msg">ما المواصفات الفنية لأبواب الكراج المناسبة للمستودعات في البيئة الرطبة بالساحل الغربي؟</div>
-            <div class="card-footer"><div class="card-time">48m ago · WhatsApp</div><div class="card-resp">✓ replied in 4s</div></div>
+            <div class="card-footer"><div class="card-meta"><div class="ch-icon ch-ig"><svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.265.07 1.645.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.265.058-1.645.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0 1.837a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8z"/></svg></div><span class="card-time">48m ago</span></div><div class="card-resp">✓ replied in 4s</div></div>
           </div>
 
           <div class="lead-card">
@@ -409,7 +412,7 @@
             </div>
             <div class="card-name">أحمد الرشيدي — شركة الطاقة الصناعية</div>
             <div class="card-msg">نبحث عن مورد معتمد لأبواب الكراج لمشاريعنا القادمة في المنطقة الشرقية، كيف نبدأ؟</div>
-            <div class="card-footer"><div class="card-time">1h ago · WhatsApp</div><div class="card-resp">✓ replied in 5s</div></div>
+            <div class="card-footer"><div class="card-meta"><div class="ch-icon ch-tw"><svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.12 2.25h6.962l4.265 5.638zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div><span class="card-time">1h ago</span></div><div class="card-resp">✓ replied in 5s</div></div>
           </div>
         </div>
       </div>
@@ -428,7 +431,7 @@
             </div>
             <div class="card-name">عمر الشهراني — شركة المقاولات الوطنية</div>
             <div class="card-msg">أكد طلب 20 باب رول أب للمجمع اللوجستي — قيمة الصفقة 87,000 ريال</div>
-            <div class="card-footer"><div class="card-time">2h ago · WhatsApp</div><div class="card-resp">✓ replied in 3s</div></div>
+            <div class="card-footer"><div class="card-meta"><div class="ch-icon ch-wa"><svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:white"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div><span class="card-time">2h ago</span></div><div class="card-resp">✓ replied in 3s</div></div>
           </div>
           <div class="lead-card">
             <div class="card-icon-row">
@@ -437,7 +440,7 @@
             </div>
             <div class="card-name">فيصل المطيري — مستودعات أرامكو</div>
             <div class="card-msg">وقع عقد صيانة سنوي لـ18 باب صناعي في مواقع أرامكو — قيمة العقد 54,000 ريال</div>
-            <div class="card-footer"><div class="card-time">3h ago · WhatsApp</div><div class="card-resp">✓ replied in 4s</div></div>
+            <div class="card-footer"><div class="card-meta"><div class="ch-icon ch-wa"><svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:white"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div><span class="card-time">3h ago</span></div><div class="card-resp">✓ replied in 4s</div></div>
           </div>
           <div class="lead-card">
             <div class="card-icon-row">
@@ -446,7 +449,7 @@
             </div>
             <div class="card-name">ريم العمري — مجمع تجاري الرياض</div>
             <div class="card-msg">أكدت عرض السعر وطلبت الفاتورة — 6 أبواب كراج كهربائية بقيمة 19,800 ريال</div>
-            <div class="card-footer"><div class="card-time">4h ago · WhatsApp</div><div class="card-resp">✓ replied in 5s</div></div>
+            <div class="card-footer"><div class="card-meta"><div class="ch-icon ch-ig"><svg viewBox="0 0 24 24" style="width:10px;height:10px;fill:white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.265.07 1.645.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.265.058-1.645.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0 1.837a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8z"/></svg></div><span class="card-time">4h ago</span></div><div class="card-resp">✓ replied in 5s</div></div>
           </div>
         </div>
       </div>
@@ -482,11 +485,11 @@
 
 <script>
 const leads=[
-  {name:"أحمد الزهراني — شركة المقاولات الكبرى",msg:"نحتاج 10 أبواب رول أب مقاس 5×4 متر لمستودعاتنا الجديدة، كم السعر والوقت اللازم للتركيب؟",tag:"hot",tagTxt:"Hot 🔥",reply:"أهلاً أحمد! باب الرول 5×4 م بالمواصفات الصناعية — السعر 6,800 ريال للوحدة، للكمية 10 وحدات نعطيكم خصم 12%. التركيب خلال أسبوع. أرسل لك عرض رسمي؟",t:"4s"},
-  {name:"هيا الدوسري — شركة التطوير العمراني",msg:"نبحث عن مورد معتمد لأبواب الكراج لمشاريعنا السكنية والتجارية في الرياض، كيف نبدأ؟",tag:"hot",tagTxt:"Hot 🔥",reply:"أهلاً هيا! يسعدنا نكون مورّدكم المعتمد. أرسلت لك كتالوج المنتجات وشروط الشراكة مع قائمة أسعار الكميات. متى يناسبك نتحدث مع فريق المبيعات؟",t:"3s"},
-  {name:"بدر الشمري — مصنع الصناعات الثقيلة",msg:"نطلب عرض سعر رسمي لتوريد وتركيب 6 أبواب صناعية حديدية مقاس 6×5 متر مع أتمتة كاملة",tag:"info",tagTxt:"RFQ",reply:"أهلاً بدر! باب صناعي 6×5 م مع نظام أتمتة — السعر 18,500 ريال للوحدة شامل التركيب والبرمجة. الضمان 3 سنوات. أرسل لك العرض الرسمي؟",t:"4s"},
-  {name:"دلال القحطاني — فندق الرياض الكبير",msg:"عندنا باب كراج كهربائي في مدخل الفندق واقف، نحتاج صيانة طارئة اليوم",tag:"warm",tagTxt:"Warm",reply:"أهلاً دلال! فريق الصيانة الطارئة متاح اليوم. أرسل لك موعد أقرب فني في منطقتكم خلال دقائق. هل الباب لا يفتح أو لا يغلق؟",t:"4s"},
-  {name:"سلطان الغامدي — أرامكو سعودية",msg:"عندنا 12 مستودع في الجبيل محتاجين عقد صيانة سنوي شامل لجميع الأبواب الصناعية",tag:"hot",tagTxt:"Hot 🔥",reply:"أهلاً سلطان! عقد صيانة سنوي لـ12 مستودع — نوفر زيارتين سنويتين لكل موقع + صيانة طارئة 24/7. سأرسل لك العرض التفصيلي وجدول الزيارات. نحدد مكالمة مع مديرنا التقني؟",t:"4s"}
+  {name:"أحمد الزهراني — شركة المقاولات الكبرى",msg:"نحتاج 10 أبواب رول أب مقاس 5×4 متر لمستودعاتنا الجديدة، كم السعر والوقت اللازم للتركيب؟",tag:"hot",tagTxt:"Hot 🔥",reply:"أهلاً أحمد! باب الرول 5×4 م بالمواصفات الصناعية — السعر 6,800 ريال للوحدة، للكمية 10 وحدات نعطيكم خصم 12%. التركيب خلال أسبوع. أرسل لك عرض رسمي؟",t:"4s",channel:"whatsapp"},
+  {name:"هيا الدوسري — مشروع عقاري",msg:"شفت منتجاتكم على انستقرام وأبغى أعرف أسعار أبواب الكراج الكهربائية للمنازل",tag:"warm",tagTxt:"Warm",reply:"أهلاً هيا! يسعدنا نخدمك. باب الكراج الكهربائي للمنازل يبدأ من 2,800 ريال حسب المقاس. أرسلت لك كتالوج المنتجات. متى يناسبك نتواصل؟",t:"3s",channel:"instagram"},
+  {name:"بدر الشمري — مصنع الصناعات الثقيلة",msg:"نطلب عرض سعر رسمي لتوريد وتركيب 6 أبواب صناعية حديدية مقاس 6×5 متر مع أتمتة كاملة",tag:"info",tagTxt:"RFQ",reply:"أهلاً بدر! باب صناعي 6×5 م مع نظام أتمتة — السعر 18,500 ريال للوحدة شامل التركيب والبرمجة. الضمان 3 سنوات. أرسل لك العرض الرسمي؟",t:"4s",channel:"whatsapp"},
+  {name:"دلال القحطاني — فندق الرياض الكبير",msg:"عندنا باب كراج كهربائي في مدخل الفندق واقف، نحتاج صيانة طارئة اليوم",tag:"warm",tagTxt:"Warm",reply:"أهلاً دلال! فريق الصيانة الطارئة متاح اليوم. أرسل لك موعد أقرب فني في منطقتكم خلال دقائق. هل الباب لا يفتح أو لا يغلق؟",t:"4s",channel:"twitter"},
+  {name:"سلطان الغامدي — أرامكو سعودية",msg:"عندنا 12 مستودع في الجبيل محتاجين عقد صيانة سنوي شامل لجميع الأبواب الصناعية",tag:"hot",tagTxt:"Hot 🔥",reply:"أهلاً سلطان! عقد صيانة سنوي لـ12 مستودع — نوفر زيارتين سنويتين لكل موقع + صيانة طارئة 24/7. سأرسل لك العرض التفصيلي وجدول الزيارات. نحدد مكالمة مع مديرنا التقني؟",t:"4s",channel:"whatsapp"}
 ];
 let idx=0,total=14,hot=5,done=7;
 
@@ -525,7 +528,7 @@ function addCard(l){
     </div>
     <div class="card-name">${l.name}</div>
     <div class="card-msg">${l.msg}</div>
-    <div class="card-footer"><div class="card-time">just now · WhatsApp</div><div class="card-resp">✓ replied in ${l.t}</div></div>`;
+    <div class="card-footer"><div class="card-meta">${channelBadge(l.channel||'whatsapp')}<span class="card-time">just now</span></div><div class="card-resp">✓ replied in ${l.t}</div></div>`;
   const col=document.getElementById('newCol');col.insertBefore(c,col.firstChild);
   const f=document.getElementById('actFeed');
   const item=document.createElement('div');item.className='act-item';
@@ -556,6 +559,16 @@ function timeAgo(iso){
   if(diff<3600) return Math.round(diff/60)+'m ago';
   return Math.round(diff/3600)+'h ago';
 }
+function channelBadge(ch){
+  const c=(ch||'whatsapp').toLowerCase();
+  const icons={
+    whatsapp:`<div class="ch-icon ch-wa"><svg viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.15-1.7-.84-1.96-.94-.26-.1-.45-.14-.64.14-.19.28-.74.94-.9 1.13-.17.19-.33.21-.61.07-1.66-.83-2.75-1.48-3.84-3.36-.29-.5.29-.46.83-1.53.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.88-2.11-.23-.55-.46-.48-.64-.49h-.55c-.19 0-.5.07-.76.35-.26.28-1 .98-1 2.38s1.02 2.76 1.17 2.95c.14.19 2.01 3.07 4.87 4.31.68.29 1.21.47 1.62.6.68.22 1.3.19 1.79.11.55-.08 1.7-.69 1.94-1.36.24-.67.24-1.24.17-1.36-.07-.12-.26-.19-.55-.33z"/></svg></div>WhatsApp`,
+    instagram:`<div class="ch-icon ch-ig"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.265.07 1.645.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.265.058-1.645.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.332.014 7.052.072 5.197.157 3.355.673 1.978 2.05.601 3.427.085 5.268 0 7.125-.014 8.332 0 8.741 0 12c0 3.259.014 3.668.072 4.948.085 1.857.601 3.698 1.978 5.075 1.377 1.377 3.218 1.893 5.075 1.978C8.332 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 1.857-.085 3.698-.601 5.075-1.978 1.377-1.377 1.893-3.218 1.978-5.075C23.986 15.668 24 15.259 24 12c0-3.259-.014-3.668-.072-4.948-.085-1.857-.601-3.698-1.978-5.075C20.573.601 18.732.085 16.875 0 15.668-.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></div>Instagram`,
+    twitter:`<div class="ch-icon ch-tw"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L2.12 2.25h6.962l4.265 5.638zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></div>Twitter / X`,
+    web:`<div class="ch-icon ch-web"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>Website`,
+  };
+  return `<span class="ch-badge">${icons[c]||icons.whatsapp}</span>`;
+}
 
 function injectLead(lead){
   if(seenIds.has(String(lead.id))) return;
@@ -580,7 +593,7 @@ function injectLead(lead){
   </div>
   <div class="card-name">${lead.name}</div>
   <div class="card-msg">${lead.message}</div>
-  <div class="card-footer"><div class="card-time">${ago} · WhatsApp</div><div class="card-resp">replied in ${lead.responseTime}</div></div>`;
+  <div class="card-footer"><div class="card-meta">${channelBadge(lead.channel)}<span class="card-time">${ago}</span></div><div class="card-resp">replied in ${lead.responseTime}</div></div>`;
   const col=document.getElementById('newCol');
   col.insertBefore(c,col.firstChild);
 
